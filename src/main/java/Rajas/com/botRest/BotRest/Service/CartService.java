@@ -25,10 +25,7 @@ public class CartService {
     Random random= new Random();
     public String addProductToCart(String command, ProductRepository productRepository, CartProductRepository cartProductRepository, long userId, CartRepository cartRepository)
     {
-        //Finding root words
-        //add Red Tshirt cart
-       // String rootString = lemmatization.getLemma(command);
-        //making first letter captital
+
         String tokenizedCommand = tokenize.tokenization(command);
         ArrayList<ProductModel>allProductsList = productRepository.allProductsList();
         System.out.println("Tokenissedddd comannddddo"+tokenizedCommand);
