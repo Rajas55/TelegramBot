@@ -9,7 +9,6 @@ import Rajas.com.botRest.BotRest.Repository.CartProductRepository;
 import Rajas.com.botRest.BotRest.Repository.CartRepository;
 import Rajas.com.botRest.BotRest.Repository.ProductRepository;
 
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Optional;
@@ -29,13 +28,20 @@ public class CartService {
         String tokenizedCommand = tokenize.tokenization(command);
         ArrayList<ProductModel>allProductsList = productRepository.allProductsList();
         System.out.println("Tokenissedddd comannddddo"+tokenizedCommand);
+        LinkedList<Cart> cartLinkedList =  cartRepository.getCartByUserId(userId);
         for(int i=0;i<allProductsList.size();i++) {
             if (tokenizedCommand.contains(allProductsList.get(i).getName()))
             {
+//                if (cartLinkedList.get(i).getProductId()==allProductsList.get(i).getProdId())
+//                {
+//                    long cartId = allProductsList.get(i).getProdId();
+//                    int quantity = allProductsList.get(i).getQuantity();
+//
+//                }
                 cart.setId(random.nextInt(0,2147483647));
                 cart.setUuid(userId);
                 cart.setProductId(allProductsList.get(i).getProdId());
-                cart.setQuantity(1);
+                cart.setQuantity(0);
 
 
                 cartRepository.save(cart);
@@ -109,18 +115,46 @@ public class CartService {
 
        public boolean updateQuantity(int quantity, CartRepository cartRepository,long uuid)
         {
-            long lastProductId;
-            int last;
+            Cart lastProductId,product;
+            int last=0;
+            int quantFlag=0;
          try {
+
              LinkedList<Cart> cart = cartRepository.getCartByUserId(uuid);
+             lastProductId=cart.getLast();
+             for (int i = 0 ; i<cart.size()-1;i++){
+                 if (cart.get(i).getProductId()==lastProductId.getProductId()){
+                     product=cart.get(i);
+                    int quant =  product.getQuantity();
+                    product.setQuantity(quant+quantity);
+                    cartRepository.save(product);
+                    cartRepository.delete(lastProductId);
+                    quantFlag++;
+                 }
 
-             last = cart.size()-1;
-             lastProductId = cart.get(last).getId();
-             Optional<Cart> lastProduct = cartRepository.findById(Math.toIntExact(lastProductId));
-             lastProduct.get().setQuantity(quantity);
-             cartRepository.save(lastProduct.get());
 
-             return true;
+             }
+
+             last=cart.size();
+//            Optional<Cart> lastProduct = cartRepository.getCartByUserId(uuid);
+             Cart lastProduct = cart.getLast();
+
+
+
+
+                if (quantFlag==0) {
+
+                    System.out.println("In else sdfghjkjhgff");
+                    int prodQuantity = lastProduct.getQuantity();
+                    lastProduct.setQuantity(quantity);
+                    cartRepository.save(lastProduct);
+                    return true;
+                }
+
+
+
+
+               return true;
          }
          catch (Exception e)
          {
