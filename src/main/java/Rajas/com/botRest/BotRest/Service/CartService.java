@@ -87,12 +87,19 @@ public class CartService {
                 LinkedList<Cart> getCartByUserId;
                 getCartByUserId = cartRepository.getCartByUserId(uuid);
 
+                LinkedList<Cart> cartByUserWithIndex = new LinkedList<>();
+
+                for(int i=0;i<getCartByUserId.size();i++)
+                {
+                  cartByUserWithIndex.add(i,getCartByUserId.get(i));
+                }
                 if (getCartByUserId != null) {
                     productInfo =productInfo.concat("Shopping Cart\uD83D\uDED2"+"\n"+"\n");
 
-                    for (int i = 0; i < getCartByUserId.size(); i++) {
+                    for (int i =0 ; i < getCartByUserId.size(); i++) {
                         Optional<ProductModel> product = productRepository.findById(getCartByUserId.get(i).getProductId());
-                        productInfo = productInfo.concat("• "+product.get().getName()+"   qty: ");
+                        productInfo = productInfo.concat(String.valueOf(cartByUserWithIndex.indexOf(getCartByUserId.get(i))+1));
+                        productInfo = productInfo.concat(". "+product.get().getName()+"   qty: ");
                         productInfo = productInfo.concat(String.valueOf((cartRepository.getCartByUserId(uuid).get(i).getQuantity())));
                         productInfo =productInfo.concat("    ₹");
                         productInfo = productInfo.concat(String.valueOf(product.get().getPrice()));
@@ -106,7 +113,8 @@ public class CartService {
                 }
             }catch (Exception e)
             {
-                return "Unable to show cart";
+
+                return e.toString();
             }
 
 

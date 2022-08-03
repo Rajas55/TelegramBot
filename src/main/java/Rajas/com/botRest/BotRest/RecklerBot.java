@@ -402,6 +402,7 @@ public class RecklerBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) { //overriding the telegram bot api method which takes and update that is a new message.
         update2 = update;
+        int deleteFlag = 0;
         sendMessage2 = null;
 //        sendMessage2.setReplyMarkup(null);
 
@@ -439,13 +440,11 @@ public class RecklerBot extends TelegramLongPollingBot {
             } else {
                 command = update.getMessage().getText();//storing the new message set by user in a string
                 if (itemService.recogniseCategory(command)) {
+                    categoryFlag = 1;
                     String categoryString = itemService.getCategories(categoryRepository);
                     ArrayList<String> categoriesList = itemService.getCategoryList(categoryRepository);
                     sendButtons(categoryString, categoriesList, false, true);
-//                sendButtons(itemService.getCategories(categoryRepository),cat);
-//                sendInlineButton("Fashion","Fashion");
 
-//                sendInlineButton("Groceries","Grocery");
 
                 }
 
@@ -468,13 +467,9 @@ public class RecklerBot extends TelegramLongPollingBot {
             cartFlag = 0;
             sendMessage("Product added to cart\uD83D\uDED2");
         }
-//        else if ((command.length()<=2)&&!(userService.isDigit(command))){ //condition for the text sent by user,using command.length.
-//            sendMessage("Please enter 3 or more characters");//send message function returns msg in chat.
-//        }
         else if (itemService.recogniseAddToCart(command)) {
             long userId;
             try {
-
 
                  userId = update.getMessage().getChatId();
             }catch (Exception d){
@@ -494,17 +489,6 @@ public class RecklerBot extends TelegramLongPollingBot {
 
 
         }
-//        else if ((categoryFlag==1)&&(command.length()<=2)&&(userService.isDigit(command))){
-//            System.out.println(command);
-//            int stringConvertedToInteger=itemService.stringToIntConverter(command);
-//            if (categoryRepository.findById(stringConvertedToInteger)!=null){
-//              String products =  itemService.getProductsByCategoryId(productRepository,stringConvertedToInteger);
-//              sendMessage(products);
-//              categoryFlag=0;
-//
-//            }
-
-        //       }
         else if (command.equals("/start")) { //command.equals function to check if user entered command has a defined word.
             sendMessage("Welcome " + update.getMessage().getFrom().getFirstName());//sending welcome and user's first name.
             sendMessage("Type /help for help");
@@ -526,9 +510,7 @@ public class RecklerBot extends TelegramLongPollingBot {
             sendInlineButton(productListByCategory,msg);
 
         } else if (itemService.recogniseCategory(command)) { //recognise the word category from user's message and if true returning all the categories
-            // int catId = itemService.getCategoryIdByCategory(command,categoryRepository);
-            sendMessage(itemService.getCategories(categoryRepository));
-            categoryFlag = 1;
+//            categoryFlag = 1;
         } else if (command.equals("/help")) { //help command to help user
 
             sendMessage("This is a retail bot to help you shop at storefront businesses online." + "\n" + "\n"
@@ -539,22 +521,33 @@ public class RecklerBot extends TelegramLongPollingBot {
 
         else if (cartService.isShowCart(command)) {
             String cart;
-            System.out.println("In show cart");
+            ArrayList<String> cartButtons = new ArrayList<>();
+            cartButtons.add("Checkout");
             try
             {
                 cart = cartService.displayCart(update.getMessage().getChatId(), cartRepository, productRepository);
             }catch (Exception g){
                 cart=cartService.displayCart(update.getCallbackQuery().getMessage().getChatId(),cartRepository,productRepository);
             }
-
-            sendMessage(cart);
-
+            sendInlineButton(cartButtons,cart);
+            String cartInstruction = "Use keyboard shortcuts to modify cart";
+            ArrayList<String> keyboardButtons = new ArrayList<>();
+            keyboardButtons.add("Delete Any Product");
+            keyboardButtons.add("Update Quantity");
+            sendButtons(cartInstruction,keyboardButtons,false,true);
 
         }
-
-        else if ((productRepository.findByNameEquals(command)!=null))
+        else if(command.equals("Delete Any Product"))
         {
+            sendMessage("Please specify the number of product you want to delete");
+            deleteFlag++;
 
+        } else if (deleteFlag>0 && userService.isDigit(command)) {
+
+            deleteFlag=0;
+
+        } else if ((productRepository.findByNameEquals(command)!=null))
+        {
             ButtonServiceForProducts buttonService = new ButtonServiceForProducts();
 //           ArrayList<ButtonServiceForProducts> buttonServiceForProducts = new ArrayList<>();
             System.out.println("In product by buttons-------------");
