@@ -555,7 +555,6 @@ public class RecklerBot extends TelegramLongPollingBot {
         else if ((productRepository.findByNameEquals(command)!=null))
         {
 
-            System.out.println("hello world");
             ButtonServiceForProducts buttonService = new ButtonServiceForProducts();
 //           ArrayList<ButtonServiceForProducts> buttonServiceForProducts = new ArrayList<>();
             System.out.println("In product by buttons-------------");
