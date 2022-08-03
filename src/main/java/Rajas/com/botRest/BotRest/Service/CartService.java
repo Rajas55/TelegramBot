@@ -93,7 +93,7 @@ public class CartService {
                 {
                   cartByUserWithIndex.add(i,getCartByUserId.get(i));
                 }
-                if (getCartByUserId != null) {
+                if (!(getCartByUserId.isEmpty())) {
                     productInfo =productInfo.concat("Shopping Cart\uD83D\uDED2"+"\n"+"\n");
 
                     for (int i =0 ; i < getCartByUserId.size(); i++) {
@@ -110,17 +110,40 @@ public class CartService {
                 }
                 else{
                     return "No Items in cart\uD83D\uDC94";
+
                 }
             }catch (Exception e)
             {
 
                 return e.toString();
             }
-
-
-
         }
 
+        public String deleteFromCart(int productId,long uuid,CartRepository cartRepository)
+        {
+            productId =productId-1;
+            LinkedList<Cart> getCartByUserId;
+            getCartByUserId = cartRepository.getCartByUserId(uuid);
+
+            LinkedList<Cart> cartByUserWithIndex = new LinkedList<>();
+
+            for(int i=0;i<getCartByUserId.size();i++)
+            {
+                cartByUserWithIndex.add(i,getCartByUserId.get(i));
+            }
+            try {
+                Cart productToDelete = cartByUserWithIndex.get(productId);
+                System.out.println("--------------------------1");
+              //  String productName = String.valueOf(productToDelete.getProducts());
+                cartRepository.delete(productToDelete);
+                System.out.println("--------------------------2");
+                return "Product removed from cart";
+            }
+            catch (Exception e)
+            {
+                return "unable to delete product ";
+            }
+        }
        public boolean updateQuantity(int quantity, CartRepository cartRepository,long uuid)
         {
             Cart lastProductId,product;

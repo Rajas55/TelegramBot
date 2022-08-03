@@ -130,16 +130,16 @@ public class ItemService {
     public String stringConverterForProductList(ArrayList<ProductModel> productModels) {
         int i = 0;
         String products="";
-
-
-        for (ProductModel productModel : productModels) {
-            products = products.concat("->");
-            products = products.concat(productModels.get(i).getName() + "\t" + "₹");
-            products = products.concat(String.valueOf(productModels.get(i).getPrice()) + "\n");
-            products = products.concat("Desc: " + productModels.get(i).getDescription() + "\n" + "\n");
-            i++;
+        if(productModels!=null) {
+            for (ProductModel productModel : productModels) {
+                products = products.concat("->");
+                products = products.concat(productModels.get(i).getName() + "\t" + "₹");
+                products = products.concat(String.valueOf(productModels.get(i).getPrice()) + "\n");
+                products = products.concat("Desc: " + productModels.get(i).getDescription() + "\n" + "\n");
+                i++;
+            }
+            System.out.println(products);
         }
-        System.out.println(products);
         return products;
     }
 
@@ -176,7 +176,14 @@ public class ItemService {
 public int flag=0;
     public String productByButton(String command,ProductRepository productRepository){
         ArrayList<ProductModel>productModels= productRepository.findByNameEquals(command);
-        String productName = productModels.get(0).getName();
+        String productName ="";
+        if(productModels.isEmpty())
+        {
+
+        }
+        else {
+            productName = productModels.get(0).getName();
+        }
         if (productName.length()>2)
         {
             flag=1;
