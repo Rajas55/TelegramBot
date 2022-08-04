@@ -477,8 +477,10 @@ public class RecklerBot extends TelegramLongPollingBot {
           //  sendMessage("Product added to cart\uD83D\uDED2");
             LinkedList<String> keyButtons = new LinkedList<>();
             keyButtons.add("Show Cart");
-            keyButtons.add("Show Categories");
             sendInlineButton(keyButtons,"Product added to cart\uD83D\uDED2");
+            LinkedList<String> categoriesList = itemService.getCategoryList(categoryRepository);
+            sendButtons(itemService.getCategories(categoryRepository), categoriesList, false, true);
+
         }
         else if(command.equals("Delete all from cart"))
         {
@@ -490,7 +492,6 @@ public class RecklerBot extends TelegramLongPollingBot {
             sendButtons(cartMessage, button, false, true);
         }
         else if (cartService.isShowCart(command)) {
-            System.out.println("innnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
             String cart = null;
             LinkedList<String> cartButtons = new LinkedList<>();
             cartButtons.add("Checkout");
@@ -583,9 +584,8 @@ public class RecklerBot extends TelegramLongPollingBot {
             sendMessage("Welcome " + update.getMessage().getFrom().getFirstName());//sending welcome and user's first name.
             sendMessage("Type /help for help");
 //            sendMessage(userService.registerUser()); // register user function in user service to send message "Enter you number".
-            String text = "Please enter your number" + "\n" + "\n" + "You can edit/change your number just by typing a new one.";
+            String text = "Please click on the button below to register using mobile number";
             requestMobileNumberButton(text, "Send Contact Information", true);
-            System.out.println("me ithe aahe");
 
 
             //Passing the command and list of categories to the recogniseCategoryByName function in itemService
