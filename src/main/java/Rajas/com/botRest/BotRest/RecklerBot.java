@@ -16,7 +16,9 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.invoices.SendInvoice;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.payments.SuccessfulPayment;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
@@ -37,11 +39,13 @@ import static java.lang.Boolean.TRUE;
 @Service
 public class RecklerBot extends TelegramLongPollingBot {
     int categoryFlag = 0;
-
+    boolean isSuccessfulPayment=false;
     int deleteFlag = 0;
     int cartFlag = 0;
     String mobNo = null;
     SendMessage message = new SendMessage(); //new object for SendMessage predefined by telegram bot api
+    SuccessfulPayment successfulPayment = new SuccessfulPayment();
+    Message m = new Message();
     Update update2;
     ItemService itemService = new ItemService(); //object for the service class which contains the business logic
     Tokenize tokenize = new Tokenize(); //new object for tokenize class that is nlp/word separation
@@ -102,7 +106,15 @@ public class RecklerBot extends TelegramLongPollingBot {
             }
         }catch (Exception e ){
             message.setText(chat);
-            message.setChatId(update2.getCallbackQuery().getMessage().getChatId());
+            try {
+                message.setChatId(update2.getCallbackQuery().getMessage().getChatId());
+            }
+            catch (Exception z)
+            {
+
+//              sendMessage(successfulPayment.getProviderPaymentChargeId());
+
+            }
 
             try {
                 execute(message);
@@ -461,7 +473,15 @@ public class RecklerBot extends TelegramLongPollingBot {
                 command = update.getMessage().getText();
                 System.out.println(e);
             }catch (Exception f){
-               command =  update.getCallbackQuery().getData();
+                try {
+
+
+                    command = update.getCallbackQuery().getData();
+                }catch (Exception a){
+                    isSuccessfulPayment= m.hasSuccessfulPayment();
+                    command= successfulPayment.getInvoicePayload();
+
+                }
 
             }
 
@@ -523,16 +543,30 @@ public class RecklerBot extends TelegramLongPollingBot {
             String description = "Shopping cart";
             LinkedList<Cart> cart = cartRepository.getCartByUserId(userId);
             CheckoutService checkoutService= new CheckoutService(userId,companyName,payload,description);
-         SendInvoice sendInvoice=    checkoutService.invoiceGenerator(cart,productRepository);
+         SendInvoice sendInvoice =    checkoutService.invoiceGenerator(cart,productRepository);
+         successfulPayment.setCurrency("INR");
+         successfulPayment.setTotalAmount(26000000);
+         successfulPayment.setInvoicePayload(sendInvoice.getPayload());
+//         successfulPayment.setProviderPaymentChargeId("Success");
+
+//           String payload =  sendInvoice.getPayload();
 
         try {
             execute(sendInvoice);
         }
         catch (Exception e)
         {
-            System.out.println("Cant process");
+            System.out.println("Cant process"+ e);
         }
-        } else if (deleteFlag>0 && userService.isDigit(command)) {
+
+        } else if (isSuccessfulPayment){
+            sendMessage("Payment Successful");
+
+        }
+        else  if (!isSuccessfulPayment){
+            sendMessage("Payment Unsuccessful");
+        }
+        else if (deleteFlag>0 && userService.isDigit(command)) {
 
             deleteFlag=0;
             sendMessage(cartService.deleteFromCart(Integer.parseInt(command),update2.getMessage().getChatId(),cartRepository));

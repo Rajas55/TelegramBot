@@ -38,16 +38,18 @@ public class CheckoutService  {
          Optional<ProductModel> productModel= productRepository.findById(prodId);
             labeledPrices.add(i,new LabeledPrice());
             labeledPrices.get(i).setLabel(productModel.get().getName());
-            labeledPrices.get(i).setAmount(productModel.get().getPrice()*cart.get(i).getQuantity());
+            labeledPrices.get(i).setAmount((productModel.get().getPrice()*100)*cart.get(i).getQuantity());
         }
 
        SendInvoice sendInvoice= new SendInvoice();
         sendInvoice.setChatId(userId);
+        sendInvoice.setProviderToken(providerToken);
         sendInvoice.setTitle(companyName);
         sendInvoice.setPayload(payload);
         sendInvoice.setDescription(description);
         sendInvoice.setCurrency(currency);
         sendInvoice.setPrices(labeledPrices);
+        sendInvoice.setNeedShippingAddress(true);
         return sendInvoice;
     }
 
