@@ -585,7 +585,7 @@ public class RecklerBot extends TelegramLongPollingBot {
             sendMessage("Type /help for help");
 //            sendMessage(userService.registerUser()); // register user function in user service to send message "Enter you number".
             String text = "Please click on the button below to register using mobile number";
-            requestMobileNumberButton(text, "Send Contact Information", true);
+            requestMobileNumberButton(text, "☎️ Click here to register", true);
 
 
             //Passing the command and list of categories to the recogniseCategoryByName function in itemService
