@@ -5,10 +5,7 @@ import Rajas.com.botRest.BotRest.Entity.Cart;
 import Rajas.com.botRest.BotRest.Entity.ProductModel;
 import Rajas.com.botRest.BotRest.NLP.Tokenize;
 import Rajas.com.botRest.BotRest.Repository.*;
-import Rajas.com.botRest.BotRest.Service.ButtonServiceForProducts;
-import Rajas.com.botRest.BotRest.Service.CartService;
-import Rajas.com.botRest.BotRest.Service.ItemService;
-import Rajas.com.botRest.BotRest.Service.UserService;
+import Rajas.com.botRest.BotRest.Service.*;
 import lombok.SneakyThrows;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -519,8 +516,23 @@ public class RecklerBot extends TelegramLongPollingBot {
 
 
 
+        } else if (command.equals("Checkout")) {
+            long userId = update.getCallbackQuery().getMessage().getChatId();
+            String companyName ="RetailBot";
+            String payload = "this is payload";
+            String description = "Shopping cart";
+            LinkedList<Cart> cart = cartRepository.getCartByUserId(userId);
+            CheckoutService checkoutService= new CheckoutService(userId,companyName,payload,description);
+         SendInvoice sendInvoice=    checkoutService.invoiceGenerator(cart,productRepository);
+
+        try {
+            execute(sendInvoice);
         }
-        else if (deleteFlag>0 && userService.isDigit(command)) {
+        catch (Exception e)
+        {
+            System.out.println("Cant process");
+        }
+        } else if (deleteFlag>0 && userService.isDigit(command)) {
 
             deleteFlag=0;
             sendMessage(cartService.deleteFromCart(Integer.parseInt(command),update2.getMessage().getChatId(),cartRepository));
