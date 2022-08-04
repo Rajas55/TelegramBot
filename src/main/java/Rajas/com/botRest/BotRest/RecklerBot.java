@@ -480,6 +480,15 @@ public class RecklerBot extends TelegramLongPollingBot {
             keyButtons.add("Show Categories");
             sendInlineButton(keyButtons,"Product added to cart\uD83D\uDED2");
         }
+        else if(command.equals("Delete all from cart"))
+        {
+            cartRepository.deleteAll();
+            sendMessage("All products deleted from cart");
+            String cartMessage ="No Items in cart\uD83D\uDC94";
+            LinkedList<String> button = new LinkedList<>();
+            button.add("Back To Categories");
+            sendButtons(cartMessage, button, false, true);
+        }
         else if (cartService.isShowCart(command)) {
             System.out.println("innnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
             String cart = null;
@@ -500,8 +509,10 @@ public class RecklerBot extends TelegramLongPollingBot {
                 String cartInstruction = "Use keyboard shortcuts to modify cart";
                 LinkedList<String> keyboardButtons = new LinkedList<>();
                 keyboardButtons.add("Delete a product from cart");
+                keyboardButtons.add("Delete all from cart");
                 keyboardButtons.add("Update Quantity");
                 keyboardButtons.add("Back to categories");
+
                 sendButtons(cartInstruction, keyboardButtons, false, true);
             }
 
@@ -527,6 +538,7 @@ public class RecklerBot extends TelegramLongPollingBot {
             String cartInstruction = "Use keyboard shortcuts to modify cart";
             LinkedList<String> keyboardButtons = new LinkedList<>();
             keyboardButtons.add("Delete a product from cart");
+            keyboardButtons.add("Delete all from cart");
             keyboardButtons.add("Update Quantity");
             keyboardButtons.add("Back to categories");
             sendButtons(cartInstruction,keyboardButtons,false,true);
