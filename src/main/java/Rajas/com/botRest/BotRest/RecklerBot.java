@@ -344,11 +344,11 @@ public class RecklerBot extends TelegramLongPollingBot {
         KeyboardRow keyboardRow1 = new KeyboardRow();
         KeyboardRow keyboardRow2 = new KeyboardRow();
 
-        List<KeyboardRow> keyboardRowList = new ArrayList<>();
+        List<KeyboardRow> keyboardRowList = new LinkedList<>();
 
-        ArrayList<KeyboardButton> keyboardButtons = new ArrayList<>();
+        LinkedList<KeyboardButton> keyboardButtons = new LinkedList<>();
 
-        ArrayList<KeyboardButton> buttonArrayList = new ArrayList<>();
+        LinkedList<KeyboardButton> buttonArrayList = new LinkedList<>();
 
         KeyboardButton keyboardButton1 = new KeyboardButton();
         KeyboardButton keyboardButton2 = new KeyboardButton();
