@@ -10,6 +10,7 @@ import Rajas.com.botRest.BotRest.Repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,9 +64,9 @@ public class ItemService {
 
 
 
-    public ArrayList<String> getCategoryList(CategoryRepository categoryRepository)
+    public LinkedList<String> getCategoryList(CategoryRepository categoryRepository)
     {
-        ArrayList<String> categoryList =new ArrayList<>();
+        LinkedList<String> categoryList =new LinkedList<>();
         List<CategoryModel> categories = categoryRepository.findAll();
         int i=0;
         for(CategoryModel categoryModel: categories)
@@ -116,7 +117,7 @@ public class ItemService {
 //
         for (i = 0; i < arr.length; i++) {
             if (productRepository.findByNameContaining(arr[i]).size() != 0) {
-                System.out.println("Inside for loop");
+
                 productByName = productRepository.findByNameContaining(arr[i]);
                 break;
 //
@@ -159,7 +160,7 @@ public class ItemService {
     }
 
                 
-                
+
 
 
     public boolean recogniseAddToCart(String command) {

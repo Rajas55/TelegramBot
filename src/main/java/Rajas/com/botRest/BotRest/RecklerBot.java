@@ -334,7 +334,7 @@ public class RecklerBot extends TelegramLongPollingBot {
 
     SendMessage sendMessage2 = new SendMessage();
 
-    public void sendButtons(String text, ArrayList<String> buttonText, boolean isContact, boolean isOneTimeKeyboard) {
+    public void sendButtons(String text, LinkedList<String> buttonText, boolean isContact, boolean isOneTimeKeyboard) {
 
         sendMessage2 = new SendMessage();
         sendMessage2.setText(text);
@@ -429,7 +429,7 @@ public class RecklerBot extends TelegramLongPollingBot {
                     sendMessage("Welcome back " + name);
                     // sendMessage(itemService.getCategories(categoryRepository));
                     String categoryString = itemService.getCategories(categoryRepository);
-                    ArrayList<String> categoriesList = itemService.getCategoryList(categoryRepository);
+                    LinkedList<String> categoriesList = itemService.getCategoryList(categoryRepository);
                     sendButtons(categoryString, categoriesList, false, true);
                 } else {
                     isContactDetailsSaved = userService.saveUser(chatId, contact, name);
@@ -437,8 +437,9 @@ public class RecklerBot extends TelegramLongPollingBot {
                         sendMessage(contact + " Registered Successfully");
                         //   sendMessage(itemService.getCategories(categoryRepository));
                         String categoryString = itemService.getCategories(categoryRepository);
-                        ArrayList<String> categoriesList = itemService.getCategoryList(categoryRepository);
+                        LinkedList<String> categoriesList = itemService.getCategoryList(categoryRepository);
                         sendButtons(categoryString, categoriesList, false, true);
+
 
                     } else {
                         sendMessage("Server down please try again later");
@@ -450,7 +451,7 @@ public class RecklerBot extends TelegramLongPollingBot {
                 if (itemService.recogniseCategory(command)) {
                     categoryFlag = 1;
                     String categoryString = itemService.getCategories(categoryRepository);
-                    ArrayList<String> categoriesList = itemService.getCategoryList(categoryRepository);
+                    LinkedList<String> categoriesList = itemService.getCategoryList(categoryRepository);
                     sendButtons(categoryString, categoriesList, false, true);
 
 
@@ -491,13 +492,13 @@ public class RecklerBot extends TelegramLongPollingBot {
                 cart = cartService.displayCart(update.getCallbackQuery().getMessage().getChatId(), cartRepository, productRepository);
             }
             if (cart.equals("No Items in cart\uD83D\uDC94")) {
-                ArrayList<String> button = new ArrayList<>();
+                LinkedList<String> button = new LinkedList<>();
                 button.add("Back To Categories");
                 sendButtons(cart, button, false, true);
             } else {
                 sendInlineButton(cartButtons, cart);
                 String cartInstruction = "Use keyboard shortcuts to modify cart";
-                ArrayList<String> keyboardButtons = new ArrayList<>();
+                LinkedList<String> keyboardButtons = new LinkedList<>();
                 keyboardButtons.add("Delete a product from cart");
                 keyboardButtons.add("Update Quantity");
                 keyboardButtons.add("Back to categories");
@@ -524,7 +525,7 @@ public class RecklerBot extends TelegramLongPollingBot {
             }
             sendInlineButton(cartButtons,cart);
             String cartInstruction = "Use keyboard shortcuts to modify cart";
-            ArrayList<String> keyboardButtons = new ArrayList<>();
+            LinkedList<String> keyboardButtons = new LinkedList<>();
             keyboardButtons.add("Delete a product from cart");
             keyboardButtons.add("Update Quantity");
             keyboardButtons.add("Back to categories");
@@ -542,12 +543,13 @@ public class RecklerBot extends TelegramLongPollingBot {
             }
             String productsAddedInCartResult = cartService.addProductToCart(command, productRepository, cartProductRepository, userId, cartRepository);
             if (productsAddedInCartResult != null) {
-                ArrayList<String> quantity = new ArrayList<>();
+                LinkedList<String> quantity = new LinkedList<>();
                 quantity.add("1");
                 quantity.add("2");
                 quantity.add("3");
                 quantity.add("4");
                 quantity.add("5");
+
 
                 sendButtons("Please specify quantity",quantity,false,true);
              //   sendMessage("Please specify quantity");
@@ -558,7 +560,7 @@ public class RecklerBot extends TelegramLongPollingBot {
 //            sendMessage("Added to cart");
             } else {
                 sendMessage("Unable to add product into cart");
-                ArrayList<String> categoriesList = itemService.getCategoryList(categoryRepository);
+                LinkedList<String> categoriesList = itemService.getCategoryList(categoryRepository);
                 sendButtons(itemService.getCategories(categoryRepository), categoriesList, false, true);
 
             }
@@ -583,7 +585,7 @@ public class RecklerBot extends TelegramLongPollingBot {
             String msg = "Products from "+categoryReturned;
             ArrayList<String> productListByCategory = itemService.getProductsListByCategory(productRepository, catId);
 
-            ArrayList<String> buttons = new ArrayList<>();
+            LinkedList<String> buttons = new LinkedList<>();
             buttons.add("Back to categories");
             buttons.add("Show Cart");
             sendInlineButton(productListByCategory,msg);
@@ -605,7 +607,9 @@ public class RecklerBot extends TelegramLongPollingBot {
 
         else if(command.equals("Delete a product from cart"))
         {
-            sendMessage("Please specify the number of product you want to delete");
+
+            sendMessage("Please specify the number of product you want to delete↴");
+            sendMessage(cartService.displayCart(update.getMessage().getChatId(),cartRepository,productRepository));
             deleteFlag++;
 
         }  else if ((productRepository.findByNameEquals(command)!=null))
