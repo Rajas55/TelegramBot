@@ -4,11 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class ButtonServiceForProducts {
 
     String productName ;
-    ArrayList<String> buttons  = new ArrayList<>();
+    LinkedList<String> buttons  = new LinkedList<>();
 
     public ButtonServiceForProducts(){
         buttons.add("Add to cart");
@@ -24,7 +25,7 @@ public class ButtonServiceForProducts {
         this.productName = productName;
     }
 
-    public ArrayList<String> getButtons() {
+    public LinkedList<String> getButtons() {
         return buttons;
     }
 }

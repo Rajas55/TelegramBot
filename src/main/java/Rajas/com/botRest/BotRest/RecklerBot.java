@@ -30,7 +30,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import java.net.URLEncoder;
-import java.util.ArrayList;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -120,7 +120,7 @@ public class RecklerBot extends TelegramLongPollingBot {
 
 
 
-    public  void sendInlineButton(ArrayList<String> buttonName,String productString) {
+    public  void sendInlineButton(LinkedList<String> buttonName,String productString) {
         if (buttonName.size()==0){
             sendMessage("No products available in this category\uD83D\uDE22");
         }
@@ -128,9 +128,9 @@ public class RecklerBot extends TelegramLongPollingBot {
 
             SendMessage message3 = new SendMessage();
             InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-            List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-//        List<InlineKeyboardButton> rowInline = new ArrayList<>();
-            List<InlineKeyboardButton> rowInline2 = new ArrayList<>();
+            List<List<InlineKeyboardButton>> rowsInline = new LinkedList<>();
+
+            List<InlineKeyboardButton> rowInline2 = new LinkedList<>();
             InlineKeyboardButton priceBtn = new InlineKeyboardButton();
             InlineKeyboardButton priceBtn2 = new InlineKeyboardButton();
             LinkedList<String> str = new LinkedList<>();
@@ -145,7 +145,7 @@ public class RecklerBot extends TelegramLongPollingBot {
             System.out.println("-------------1");
             for (k = 0; k < buttonDivider; k++) {
                 System.out.println("---------2");
-                rowsInline.add(k, new ArrayList<InlineKeyboardButton>());
+                rowsInline.add(k, new LinkedList<InlineKeyboardButton>());
                 System.out.println("-------------3");
                 try {
                     //    System.out.println
@@ -173,13 +173,13 @@ public class RecklerBot extends TelegramLongPollingBot {
             }
             if (buttonMod != 0) {
                 if (buttonMod == 1) {
-                    rowsInline.add(k, new ArrayList<InlineKeyboardButton>());
+                    rowsInline.add(k, new LinkedList<InlineKeyboardButton>());
                     rowsInline.get(k).add(0, new InlineKeyboardButton());
                     rowsInline.get(k).get(0).setText(buttonName.get(buttonName.size() - 1));
                     rowsInline.get(k).get(0).setCallbackData(buttonName.get(buttonName.size() - 1));
                 } else if (buttonMod == 2) {
 
-                    rowsInline.add(k, new ArrayList<InlineKeyboardButton>());
+                    rowsInline.add(k, new LinkedList<InlineKeyboardButton>());
 
                     rowsInline.get(k).add(0, new InlineKeyboardButton());
                     rowsInline.get(k).get(0).setText(buttonName.get(buttonName.size() - 1));
@@ -211,7 +211,7 @@ public class RecklerBot extends TelegramLongPollingBot {
             }
         }
     }
-    public  void sendInlineButtonForMultipleProducts(ArrayList<String> buttonName,int prodPrice,String prodName,String prodDesc) {
+    public  void sendInlineButtonForMultipleProducts(LinkedList<String> buttonName,int prodPrice,String prodName,String prodDesc) {
         if (buttonName.size()==0){
             sendMessage("No products available in this category\uD83D\uDE22");
         }
@@ -219,9 +219,9 @@ public class RecklerBot extends TelegramLongPollingBot {
 
             SendMessage message3 = new SendMessage();
             InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-            List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-//        List<InlineKeyboardButton> rowInline = new ArrayList<>();
-            List<InlineKeyboardButton> rowInline2 = new ArrayList<>();
+            List<List<InlineKeyboardButton>> rowsInline = new LinkedList<>();
+
+            List<InlineKeyboardButton> rowInline2 = new LinkedList<>();
             InlineKeyboardButton priceBtn = new InlineKeyboardButton();
             InlineKeyboardButton priceBtn2 = new InlineKeyboardButton();
             LinkedList<String> str = new LinkedList<>();
@@ -236,7 +236,7 @@ public class RecklerBot extends TelegramLongPollingBot {
             System.out.println("-------------1");
             for (k = 0; k < buttonDivider; k++) {
                 System.out.println("---------2");
-                rowsInline.add(k, new ArrayList<InlineKeyboardButton>());
+                rowsInline.add(k, new LinkedList<InlineKeyboardButton>());
                 System.out.println("-------------3");
                 try {
                     //    System.out.println
@@ -265,13 +265,13 @@ public class RecklerBot extends TelegramLongPollingBot {
             }
             if (buttonMod != 0) {
                 if (buttonMod == 1) {
-                    rowsInline.add(k, new ArrayList<InlineKeyboardButton>());
+                    rowsInline.add(k, new LinkedList<InlineKeyboardButton>());
                     rowsInline.get(k).add(0, new InlineKeyboardButton());
                     rowsInline.get(k).get(0).setText(buttonName.get(buttonName.size() - 1));
                     rowsInline.get(k).get(0).setCallbackData(buttonName.get(buttonName.size() - 1));
                 } else if (buttonMod == 2) {
 
-                    rowsInline.add(k, new ArrayList<InlineKeyboardButton>());
+                    rowsInline.add(k, new LinkedList<InlineKeyboardButton>());
 
                     rowsInline.get(k).add(0, new InlineKeyboardButton());
                     rowsInline.get(k).get(0).setText(buttonName.get(buttonName.size() - 1));
@@ -311,7 +311,7 @@ public class RecklerBot extends TelegramLongPollingBot {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setResizeKeyboard(true);
 
-        List<KeyboardRow> keyboardRowList = new ArrayList<>();
+        List<KeyboardRow> keyboardRowList = new LinkedList<>();
         KeyboardRow keyboardRow1 = new KeyboardRow();
 
         KeyboardButton keyboardButton1 = new KeyboardButton();
@@ -348,7 +348,7 @@ public class RecklerBot extends TelegramLongPollingBot {
 
         LinkedList<KeyboardButton> keyboardButtons = new LinkedList<>();
 
-        LinkedList<KeyboardButton> buttonArrayList = new LinkedList<>();
+        LinkedList<KeyboardButton> buttonLinkedList = new LinkedList<>();
 
         KeyboardButton keyboardButton1 = new KeyboardButton();
         KeyboardButton keyboardButton2 = new KeyboardButton();
@@ -356,18 +356,18 @@ public class RecklerBot extends TelegramLongPollingBot {
         KeyboardButton keyboardButton4 = new KeyboardButton();
         KeyboardButton keyboardButton5 = new KeyboardButton();
         KeyboardButton keyboardButton6 = new KeyboardButton();
-        buttonArrayList.add(keyboardButton1);
-        buttonArrayList.add(keyboardButton2);
-        buttonArrayList.add(keyboardButton3);
-        buttonArrayList.add(keyboardButton4);
-        buttonArrayList.add(keyboardButton5);
-        buttonArrayList.add(keyboardButton6);
+        buttonLinkedList.add(keyboardButton1);
+        buttonLinkedList.add(keyboardButton2);
+        buttonLinkedList.add(keyboardButton3);
+        buttonLinkedList.add(keyboardButton4);
+        buttonLinkedList.add(keyboardButton5);
+        buttonLinkedList.add(keyboardButton6);
 
 
         //  keyboardButton1.setText(String.valueOf(buttonText));
         //  keyboardButtons.add(keyboardButton1);
         for (int i = 0; i < buttonText.size(); i++) {
-            keyboardButtons.add(buttonArrayList.get(i));
+            keyboardButtons.add(buttonLinkedList.get(i));
             keyboardButtons.get(i).setText(buttonText.get(i));
             keyboardButtons.get(i).setRequestContact(isContact);
             if (i % 3 != 0)
@@ -475,7 +475,7 @@ public class RecklerBot extends TelegramLongPollingBot {
             cartService.updateQuantity(quantity, cartRepository, uuid);
             cartFlag = 0;
           //  sendMessage("Product added to cart\uD83D\uDED2");
-            ArrayList<String> keyButtons = new ArrayList<>();
+            LinkedList<String> keyButtons = new LinkedList<>();
             keyButtons.add("Show Cart");
             keyButtons.add("Show Categories");
             sendInlineButton(keyButtons,"Product added to cart\uD83D\uDED2");
@@ -483,7 +483,7 @@ public class RecklerBot extends TelegramLongPollingBot {
         else if (cartService.isShowCart(command)) {
             System.out.println("innnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
             String cart = null;
-            ArrayList<String> cartButtons = new ArrayList<>();
+            LinkedList<String> cartButtons = new LinkedList<>();
             cartButtons.add("Checkout");
             //   sendButtons();
             try {
@@ -514,7 +514,7 @@ public class RecklerBot extends TelegramLongPollingBot {
             sendMessage(cartService.deleteFromCart(Integer.parseInt(command),update2.getMessage().getChatId(),cartRepository));
        //     sendMessage(cartService.displayCart(update.getMessage().getChatId(),cartRepository,productRepository));
             String cart=null;
-            ArrayList<String> cartButtons = new ArrayList<>();
+            LinkedList<String> cartButtons = new LinkedList<>();
             cartButtons.add("Checkout");
             //   sendButtons();
             try
@@ -544,11 +544,11 @@ public class RecklerBot extends TelegramLongPollingBot {
             String productsAddedInCartResult = cartService.addProductToCart(command, productRepository, cartProductRepository, userId, cartRepository);
             if (productsAddedInCartResult != null) {
                 LinkedList<String> quantity = new LinkedList<>();
-                quantity.add("1");
-                quantity.add("2");
-                quantity.add("3");
-                quantity.add("4");
-                quantity.add("5");
+               quantity.add("4");
+               quantity.add("1");
+               quantity.add("2");
+               quantity.add("5");
+               quantity.add("3");
 
 
                 sendButtons("Please specify quantity",quantity,false,true);
@@ -583,7 +583,7 @@ public class RecklerBot extends TelegramLongPollingBot {
             int catId = itemService.getCategoryIdByCategory(categoryReturned, categoryRepository);//passing the above string and the category repo to the function getCategoryIdByCategory
 
             String msg = "Products from "+categoryReturned;
-            ArrayList<String> productListByCategory = itemService.getProductsListByCategory(productRepository, catId);
+            LinkedList<String> productListByCategory = itemService.getProductsListByCategory(productRepository, catId);
 
             LinkedList<String> buttons = new LinkedList<>();
             buttons.add("Back to categories");
@@ -615,10 +615,9 @@ public class RecklerBot extends TelegramLongPollingBot {
         }  else if ((productRepository.findByNameEquals(command)!=null))
         {
             ButtonServiceForProducts buttonService = new ButtonServiceForProducts();
-//           ArrayList<ButtonServiceForProducts> buttonServiceForProducts = new ArrayList<>();
             System.out.println("In product by buttons-------------");
             String productByButton =  itemService.productByButton(command,productRepository);
-            ArrayList<ProductModel> productModels = productRepository.findByNameEquals(productByButton);
+            LinkedList<ProductModel> productModels = productRepository.findByNameEquals(productByButton);
             System.out.println(productByButton+" product by button");
             if (itemService.flag==1) {
 
@@ -628,15 +627,15 @@ public class RecklerBot extends TelegramLongPollingBot {
                         productModels.get(0).getDescription());
             }
             else if (itemService.flag==0){
-                ArrayList<ProductModel> productModelArrayList = itemService.productModels(command,productRepository);
-                if(productModelArrayList!=null) {
-                    for (int i = 0; i < productModelArrayList.size(); i++) {
-                        String productInfo = productModelArrayList.get(i).getDescription();
-                        productInfo = productInfo.concat(String.valueOf(productModelArrayList.get(i).getPrice()));
+                LinkedList<ProductModel> productModelLinkedList = itemService.productModels(command,productRepository);
+                if(productModelLinkedList!=null) {
+                    for (int i = 0; i < productModelLinkedList.size(); i++) {
+                        String productInfo = productModelLinkedList.get(i).getDescription();
+                        productInfo = productInfo.concat(String.valueOf(productModelLinkedList.get(i).getPrice()));
 //                    sendMessage(productInfo);
-                        sendInlineButtonForMultipleProducts(buttonService.getButtons(), productModelArrayList.get(i).getPrice(),
-                                productModelArrayList.get(i).getName(),
-                                productModelArrayList.get(i).getDescription());
+                        sendInlineButtonForMultipleProducts(buttonService.getButtons(), productModelLinkedList.get(i).getPrice(),
+                                productModelLinkedList.get(i).getName(),
+                                productModelLinkedList.get(i).getDescription());
 
                     }
                 }
@@ -649,8 +648,8 @@ public class RecklerBot extends TelegramLongPollingBot {
         }
         else if (itemService.productModels(command, productRepository) != null) {
             //passing the text to productModels function to directly return any product if it matches with the user's text
-            ArrayList<ProductModel> productByName = itemService.productModels(command, productRepository);//saving  the matched products in an arrayList
-            String productsByName = itemService.stringConverterForProductList(productByName);//passing the arrayList to stringConverterForProductList to covert array to string
+            LinkedList<ProductModel> productByName = itemService.productModels(command, productRepository);
+            String productsByName = itemService.stringConverterForProductList(productByName);
             sendMessage(productsByName);//returning the string i.e. the matched products list
 
         }

@@ -9,7 +9,7 @@ import Rajas.com.botRest.BotRest.Repository.CartProductRepository;
 import Rajas.com.botRest.BotRest.Repository.CartRepository;
 import Rajas.com.botRest.BotRest.Repository.ProductRepository;
 
-import java.util.ArrayList;
+
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Random;
@@ -26,7 +26,7 @@ public class CartService {
     {
 
         String tokenizedCommand = tokenize.tokenization(command);
-        ArrayList<ProductModel>allProductsList = productRepository.allProductsList();
+        LinkedList<ProductModel>allProductsList = productRepository.allProductsList();
         System.out.println("Tokenissedddd comannddddo"+tokenizedCommand);
         LinkedList<Cart> cartLinkedList =  cartRepository.getCartByUserId(userId);
         for(int i=0;i<allProductsList.size();i++) {

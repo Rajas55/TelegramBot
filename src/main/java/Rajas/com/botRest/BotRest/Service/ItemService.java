@@ -9,7 +9,7 @@ import Rajas.com.botRest.BotRest.Repository.CategoryRepository;
 import Rajas.com.botRest.BotRest.Repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -39,7 +39,7 @@ public class ItemService {
     }
 
     public String getProducts(ProductRepository productRepository, int catId) {
-        ArrayList<ProductModel> products = productRepository.getProductsByCategoryId(catId);
+        LinkedList<ProductModel> products = productRepository.getProductsByCategoryId(catId);
         String productDetails = "";
         for (ProductModel productModel : products) {
             productDetails = productDetails.concat("-> ");
@@ -51,9 +51,9 @@ public class ItemService {
     }
 
 
-    public ArrayList<String> getProductsListByCategory(ProductRepository productRepository, int catId) {
-        ArrayList<ProductModel> products = productRepository.getProductsByCategoryId(catId);
-        ArrayList<String> productNameList = new ArrayList<>();
+    public LinkedList<String> getProductsListByCategory(ProductRepository productRepository, int catId) {
+        LinkedList<ProductModel> products = productRepository.getProductsByCategoryId(catId);
+        LinkedList<String> productNameList = new LinkedList<>();
         for (ProductModel productModel : products) {
             productNameList.add(productModel.getName());
         }
@@ -99,10 +99,10 @@ public class ItemService {
 
     }
 // returns only one product which is matching with user command
-    public ArrayList<ProductModel> productModels(String command, ProductRepository productRepository) {
+    public LinkedList<ProductModel> productModels(String command, ProductRepository productRepository) {
 
         int i = 0;
-        ArrayList<ProductModel> productByName = null;
+        LinkedList<ProductModel> productByName = null;
         String rootString = lemmatization.getLemma(command);
 //        String newCommand = tokenize.tokenization(rootString);
 
@@ -128,7 +128,7 @@ public class ItemService {
         return productByName;
     }
 
-    public String stringConverterForProductList(ArrayList<ProductModel> productModels) {
+    public String stringConverterForProductList(LinkedList<ProductModel> productModels) {
         int i = 0;
         String products="";
         if(productModels!=null) {
@@ -176,7 +176,7 @@ public class ItemService {
     }
 public int flag=0;
     public String productByButton(String command,ProductRepository productRepository){
-        ArrayList<ProductModel>productModels= productRepository.findByNameEquals(command);
+        LinkedList<ProductModel>productModels= productRepository.findByNameEquals(command);
         String productName ="";
         if(productModels.isEmpty())
         {
@@ -195,17 +195,11 @@ public int flag=0;
             flag=0;
             System.out.println("In else of product by button");
             ButtonServiceForProducts buttonService = new ButtonServiceForProducts();
-            ArrayList<ButtonServiceForProducts> buttonServiceForProducts = new ArrayList<>();
-            ArrayList<ProductModel> productModelArrayList = productModels(command,productRepository);
-//            for (int i = 0 ; i< productModelArrayList.size();i++){
-//              buttonServiceForProducts.add(i, new ButtonServiceForProducts());
-//              buttonServiceForProducts.get(i).setProductName(productModelArrayList.get(i).getName());
-////              setProductName(productModelArrayList.get(i).getName()));
-//
-//
-//            }
+            LinkedList<ButtonServiceForProducts> buttonServiceForProducts = new LinkedList<>();
+            LinkedList<ProductModel> productModelLinkedList = productModels(command,productRepository);
 
-           return stringConverterForProductList(productModelArrayList);
+
+           return stringConverterForProductList(productModelLinkedList);
 
 
         }

@@ -7,18 +7,19 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public interface ProductRepository extends JpaRepository<ProductModel,Long> {
     @Query(value = "select * from products where cat_id =:m",nativeQuery = true)
-    public ArrayList<ProductModel> getProductsByCategoryId( @Param("m")int category);
+    public LinkedList<ProductModel> getProductsByCategoryId( @Param("m")int category);
 
     //@Query(value = "select * from Test.products where name like ",nativeQuery = true)
-    public ArrayList<ProductModel>findByNameContaining(String oneValue);
+    public LinkedList<ProductModel>findByNameContaining(String oneValue);
 
 //    public ArrayList<ProductModel> findByName(String name);
     @Query(value = "select * from products",nativeQuery = true)
-    public ArrayList<ProductModel>allProductsList();
+    public LinkedList<ProductModel>allProductsList();
 
-    public ArrayList<ProductModel>findByNameEquals(String prodName);
+    public LinkedList<ProductModel> findByNameEquals(String prodName);
 
 }
