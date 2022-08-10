@@ -10,6 +10,7 @@ import Rajas.com.botRest.BotRest.Repository.CartRepository;
 import Rajas.com.botRest.BotRest.Repository.ProductRepository;
 
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Random;
@@ -22,6 +23,33 @@ public class CartService {
     Cart cart = new Cart();
     static int id;
     Random random= new Random();
+
+
+
+
+    public LinkedList<String> getcartKeyboardButtons()
+    {
+        LinkedList<String> keyboardButtons = new LinkedList<>();
+        keyboardButtons.add("Delete a product from cart");
+        keyboardButtons.add("Delete all from cart");
+        keyboardButtons.add("Update Quantity");
+        keyboardButtons.add("Back to categories");
+        return keyboardButtons;
+    }
+
+    public LinkedList<String>  getCartInstruction()
+    {
+        LinkedList<String> cartButtons = new LinkedList<>();
+        cartButtons.add("Checkout");
+        return cartButtons;
+    }
+
+    public LinkedList<String> getCheckoutButton()
+    {
+        LinkedList<String> cartButtons = new LinkedList<>();
+        cartButtons.add("Checkout");
+        return cartButtons;
+    }
     public String addProductToCart(String command, ProductRepository productRepository, CartProductRepository cartProductRepository, long userId, CartRepository cartRepository)
     {
 
@@ -142,6 +170,26 @@ public class CartService {
             catch (Exception e)
             {
                 return "unable to delete product ";
+            }
+        }
+
+
+        public boolean updateCart(int productNo,int quantity,long uuid,CartRepository cartRepository)
+        {
+            try {
+                LinkedList<Cart> userCart = cartRepository.getCartByUserId(uuid);
+                LinkedList<Cart> userCart2 = new LinkedList<>();
+                for (int i = 0; i < userCart.size(); i++) {
+                    userCart2.add(i, userCart.get(i));
+                }
+                Cart productToUpdate = userCart2.get(productNo);
+                productToUpdate.setQuantity(quantity);
+                cartRepository.save(productToUpdate);
+                return true;
+            }
+            catch (Exception e)
+            {
+                return  false;
             }
         }
        public boolean updateQuantity(int quantity, CartRepository cartRepository,long uuid)

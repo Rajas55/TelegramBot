@@ -1,13 +1,11 @@
 package Rajas.com.botRest.BotRest;
 
-import Rajas.com.botRest.BotRest.Controller.UserController;
 import Rajas.com.botRest.BotRest.Entity.Cart;
 import Rajas.com.botRest.BotRest.Entity.ProductModel;
 import Rajas.com.botRest.BotRest.NLP.Tokenize;
 import Rajas.com.botRest.BotRest.Repository.*;
 import Rajas.com.botRest.BotRest.Service.*;
 import lombok.SneakyThrows;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
@@ -15,34 +13,31 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.invoices.SendInvoice;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.payments.SuccessfulPayment;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
-import java.net.URLEncoder;
-
 import java.util.LinkedList;
 import java.util.List;
-
-import static java.lang.Boolean.TRUE;
 
 //service class/main bot class which extends telegram polling bot(Has all the commands
 @Service
 public class RecklerBot extends TelegramLongPollingBot {
     int categoryFlag = 0;
+    int updateFlag=0;
     boolean isSuccessfulPayment=false;
     int deleteFlag = 0;
     int cartFlag = 0;
     String mobNo = null;
+
+    private int cartProductNo=0;
     SendMessage message = new SendMessage(); //new object for SendMessage predefined by telegram bot api
     SuccessfulPayment successfulPayment = new SuccessfulPayment();
     Message m = new Message();
@@ -424,7 +419,7 @@ public class RecklerBot extends TelegramLongPollingBot {
 //        sendMessage2.setReplyMarkup(null);
 
         //   System.out.println(update.getMessage().getText()); //to get the text sent by user in the console.
-         //to get the first name of user in console.
+        //to get the first name of user in console.
         String command = "";
         try {
             if (update.getMessage().hasContact()) {
@@ -457,36 +452,27 @@ public class RecklerBot extends TelegramLongPollingBot {
 
             } else {
                 command = update.getMessage().getText();//storing the new message set by user in a string
-                if (itemService.recogniseCategory(command)) {
-                    categoryFlag = 1;
-                    String categoryString = itemService.getCategories(categoryRepository);
-                    LinkedList<String> categoriesList = itemService.getCategoryList(categoryRepository);
-                    sendButtons(categoryString, categoriesList, false, true);
-
-
-                }
-
-
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             try {
                 command = update.getMessage().getText();
                 System.out.println(e);
-            }catch (Exception f){
+            } catch (Exception f) {
                 try {
 
 
                     command = update.getCallbackQuery().getData();
-                }catch (Exception a){
-                    isSuccessfulPayment= m.hasSuccessfulPayment();
-                    command= successfulPayment.getInvoicePayload();
+                } catch (Exception a) {
+                    isSuccessfulPayment = m.hasSuccessfulPayment();
+                    command = successfulPayment.getInvoicePayload();
 
                 }
 
             }
 
         }
-        if ((cartFlag == 1) && (userService.isDigit(command))) {
+
+       if ((cartFlag == 1) && (userService.isDigit(command))) {
             long uuid = update.getMessage().getChatId();
             int quantity = itemService.stringToIntConverter(command);
             cartService.updateQuantity(quantity, cartRepository, uuid);
@@ -494,11 +480,52 @@ public class RecklerBot extends TelegramLongPollingBot {
           //  sendMessage("Product added to cart\uD83D\uDED2");
             LinkedList<String> keyButtons = new LinkedList<>();
             keyButtons.add("Show Cart");
+            keyButtons.add("Show Categories");
             sendInlineButton(keyButtons,"Product added to cart\uD83D\uDED2");
             LinkedList<String> categoriesList = itemService.getCategoryList(categoryRepository);
             sendButtons(itemService.getCategories(categoryRepository), categoriesList, false, true);
 
         }
+       else if(command.contains("Buy now") && command.length() >7)
+       {
+
+           System.out.println("-------------------------------------");
+           System.out.println(command);
+           String productName = command.replace("Buy now","").trim();
+           LinkedList<ProductModel> product = productRepository.findByNameEquals(productName);
+
+
+           System.out.println(productName);
+           System.out.println("-------------------------------------");
+           long userId = update.getCallbackQuery().getMessage().getChatId();
+           String companyName = "RetailBot";
+           String payload = "this is payload";
+           String description = "Shopping cart";
+
+           LinkedList<Cart> cart = new LinkedList<>();
+           cart.add(0,new Cart());
+           cart.get(0).setId(0);
+           cart.get(0).setUuid(userId);
+           cart.get(0).setProducts(product);
+           cart.get(0).setProductId(product.get(0).getProdId());
+           cart.get(0).setQuantity(1);
+         //  LinkedList<Cart> cart = cartRepository.getCartByUserId(userId);
+           CheckoutService checkoutService = new CheckoutService(userId, companyName, payload, description);
+           SendInvoice sendInvoice = checkoutService.invoiceGenerator(cart, productRepository);
+//           successfulPayment.setCurrency("INR");
+//           successfulPayment.setTotalAmount(26000000);
+//           successfulPayment.setInvoicePayload(sendInvoice.getPayload());
+//         successfulPayment.setProviderPaymentChargeId("Success");
+
+//           String payload =  sendInvoice.getPayload();
+
+           try {
+               execute(sendInvoice);
+           } catch (Exception e) {
+               System.out.println("Cant process" + e);
+           }
+
+       }
         else if(command.equals("Delete all from cart"))
         {
             cartRepository.deleteAll();
@@ -510,9 +537,7 @@ public class RecklerBot extends TelegramLongPollingBot {
         }
         else if (cartService.isShowCart(command)) {
             String cart = null;
-            LinkedList<String> cartButtons = new LinkedList<>();
-            cartButtons.add("Checkout");
-            //   sendButtons();
+            LinkedList<String> cartButtons = cartService.getCheckoutButton();
             try {
                 cart = cartService.displayCart(update.getMessage().getChatId(), cartRepository, productRepository);
             } catch (Exception g) {
@@ -525,12 +550,7 @@ public class RecklerBot extends TelegramLongPollingBot {
             } else {
                 sendInlineButton(cartButtons, cart);
                 String cartInstruction = "Use keyboard shortcuts to modify cart";
-                LinkedList<String> keyboardButtons = new LinkedList<>();
-                keyboardButtons.add("Delete a product from cart");
-                keyboardButtons.add("Delete all from cart");
-                keyboardButtons.add("Update Quantity");
-                keyboardButtons.add("Back to categories");
-
+                LinkedList<String> keyboardButtons = cartService.getcartKeyboardButtons();
                 sendButtons(cartInstruction, keyboardButtons, false, true);
             }
 
@@ -538,43 +558,33 @@ public class RecklerBot extends TelegramLongPollingBot {
 
         } else if (command.equals("Checkout")) {
             long userId = update.getCallbackQuery().getMessage().getChatId();
-            String companyName ="RetailBot";
+            String companyName = "RetailBot";
             String payload = "this is payload";
             String description = "Shopping cart";
             LinkedList<Cart> cart = cartRepository.getCartByUserId(userId);
-            CheckoutService checkoutService= new CheckoutService(userId,companyName,payload,description);
-         SendInvoice sendInvoice =    checkoutService.invoiceGenerator(cart,productRepository);
-         successfulPayment.setCurrency("INR");
-         successfulPayment.setTotalAmount(26000000);
-         successfulPayment.setInvoicePayload(sendInvoice.getPayload());
+            CheckoutService checkoutService = new CheckoutService(userId, companyName, payload, description);
+            SendInvoice sendInvoice = checkoutService.invoiceGenerator(cart, productRepository);
+            successfulPayment.setCurrency("INR");
+            successfulPayment.setTotalAmount(26000000);
+            successfulPayment.setInvoicePayload(sendInvoice.getPayload());
 //         successfulPayment.setProviderPaymentChargeId("Success");
 
 //           String payload =  sendInvoice.getPayload();
 
-        try {
-            execute(sendInvoice);
-        }
-        catch (Exception e)
-        {
-            System.out.println("Cant process"+ e);
+            try {
+                execute(sendInvoice);
+            } catch (Exception e) {
+                System.out.println("Cant process" + e);
+            }
         }
 
-        } else if (isSuccessfulPayment){
-            sendMessage("Payment Successful");
-
-        }
-        else  if (!isSuccessfulPayment){
-            sendMessage("Payment Unsuccessful");
-        }
         else if (deleteFlag>0 && userService.isDigit(command)) {
 
             deleteFlag=0;
             sendMessage(cartService.deleteFromCart(Integer.parseInt(command),update2.getMessage().getChatId(),cartRepository));
        //     sendMessage(cartService.displayCart(update.getMessage().getChatId(),cartRepository,productRepository));
             String cart=null;
-            LinkedList<String> cartButtons = new LinkedList<>();
-            cartButtons.add("Checkout");
-            //   sendButtons();
+            LinkedList<String> cartButtons = cartService.getCheckoutButton();
             try
             {
                 cart = cartService.displayCart(update.getMessage().getChatId(), cartRepository, productRepository);
@@ -583,11 +593,7 @@ public class RecklerBot extends TelegramLongPollingBot {
             }
             sendInlineButton(cartButtons,cart);
             String cartInstruction = "Use keyboard shortcuts to modify cart";
-            LinkedList<String> keyboardButtons = new LinkedList<>();
-            keyboardButtons.add("Delete a product from cart");
-            keyboardButtons.add("Delete all from cart");
-            keyboardButtons.add("Update Quantity");
-            keyboardButtons.add("Back to categories");
+            LinkedList<String> keyboardButtons = cartService.getcartKeyboardButtons();
             sendButtons(cartInstruction,keyboardButtons,false,true);
 
             //  sendMessage(cartRepository.getCartByUserId(update.getMessage().getChatId()));
@@ -650,10 +656,14 @@ public class RecklerBot extends TelegramLongPollingBot {
             sendButtons("Quick actions ↴",buttons,false,true);
 
 
-        } else if (itemService.recogniseCategory(command)&& command.equals("Show Categories")) { //recognise the word category from user's message and if true returning all the categories
+        } else if (itemService.recogniseCategory(command) || command.equals("Show Categories")) { //recognise the word category from user's message and if true returning all the categories
 //            categoryFlag = 1;
-            sendMessage(itemService.getCategories(categoryRepository));
-         //   sendMessage("innnnnnnnn");
+
+        //    sendMessage(itemService.getCategories(categoryRepository));
+            LinkedList<String> categoriesList = itemService.getCategoryList(categoryRepository);
+            sendButtons(itemService.getCategories(categoryRepository), categoriesList, false, true);
+
+            //   sendMessage("innnnnnnnn");
         } else if (command.equals("/help")) { //help command to help user
 
             sendMessage("This is a retail bot to help you shop at storefront businesses online." + "\n" + "\n"
@@ -670,56 +680,105 @@ public class RecklerBot extends TelegramLongPollingBot {
             sendMessage(cartService.displayCart(update.getMessage().getChatId(),cartRepository,productRepository));
             deleteFlag++;
 
-        }  else if ((productRepository.findByNameEquals(command)!=null))
-        {
-            ButtonServiceForProducts buttonService = new ButtonServiceForProducts();
-            System.out.println("In product by buttons-------------");
-            String productByButton =  itemService.productByButton(command,productRepository);
-            LinkedList<ProductModel> productModels = productRepository.findByNameEquals(productByButton);
-            System.out.println(productByButton+" product by button");
-            if (itemService.flag==1) {
-
-                buttonService.setProductName(productByButton);
-                sendInlineButtonForMultipleProducts(buttonService.getButtons(),productModels.get(0).getPrice(),
-                        productModels.get(0).getName(),
-                        productModels.get(0).getDescription());
-            }
-            else if (itemService.flag==0){
-                LinkedList<ProductModel> productModelLinkedList = itemService.productModels(command,productRepository);
-                if(productModelLinkedList!=null) {
-                    for (int i = 0; i < productModelLinkedList.size(); i++) {
-                        String productInfo = productModelLinkedList.get(i).getDescription();
-                        productInfo = productInfo.concat(String.valueOf(productModelLinkedList.get(i).getPrice()));
-//                    sendMessage(productInfo);
-                        sendInlineButtonForMultipleProducts(buttonService.getButtons(), productModelLinkedList.get(i).getPrice(),
-                                productModelLinkedList.get(i).getName(),
-                                productModelLinkedList.get(i).getDescription());
-
-                    }
-                }
-            }
-
-//            productRepository.findByNameContaining()
-//            buttonServiceForProducts.add(buttonService.setProductName()).
-
-//            sendMessage(productByButton);
         }
-        else if (itemService.productModels(command, productRepository) != null) {
-            //passing the text to productModels function to directly return any product if it matches with the user's text
-            LinkedList<ProductModel> productByName = itemService.productModels(command, productRepository);
-            String productsByName = itemService.stringConverterForProductList(productByName);
-            sendMessage(productsByName);//returning the string i.e. the matched products list
-
-        }
+//        else if (itemService.productModels(command, productRepository) != null) {
+//            //passing the text to productModels function to directly return any product if it matches with the user's text
+//            LinkedList<ProductModel> productByName = itemService.productModels(command, productRepository);
+//            String productsByName = itemService.stringConverterForProductList(productByName);
+//            sendMessage(productsByName);//returning the string i.e. the matched products list
+//
+//        }
 
         else if (command.equals("/hey")) {
 //          sendInlineButton();
-        } else if (!(command.equals("")))//if the command does not match with any if returning can't recognise command message.
+        }
+        else if(command.equals("Update Quantity")){
+           sendMessage(cartService.displayCart(update.getMessage().getChatId(),cartRepository,productRepository));
+
+           sendMessage("Enter the number of the product to update its Qty");
+
+           System.out.println("-------------1");
+            updateFlag =1;
+       }
+   else if (updateFlag==1) {
+           System.out.println("-------------2");
+           try {
+               cartProductNo = Integer.parseInt(command);
+           }
+           catch (Exception e)
+           {
+               System.out.println("Exceptionn"+e);
+           }
+           System.out.println("-------------22");
+
+           updateFlag=2;
+           sendMessage("Enter a new quantity for the product");
+
+       }
+
+       else if(updateFlag==2)
+       {
+           cartProductNo = cartProductNo-1;
+           System.out.println("-------------4");
+           int quanity= Integer.parseInt(command);
+           long chatId = update.getMessage().getChatId();
+         boolean result =   cartService.updateCart(cartProductNo,quanity,chatId,cartRepository);
+           updateFlag=0;
+
+           if(result==true)
+           {
+               sendMessage("Quantity updated");
+               sendMessage(cartService.displayCart(update.getMessage().getChatId(),cartRepository,productRepository));
+
+           }
+           else
+           {
+               sendMessage("unable to update");
+           }
+       }
+
+       else if ((productRepository.findByNameEquals(command)!=null )&& !(command.equals("Categories")) && !(command.equals("Update Quantity")))
+       {
+           ButtonServiceForProducts buttonService = new ButtonServiceForProducts();
+           System.out.println("In product by buttons-------------");
+           String productByButton =  itemService.productByButton(command,productRepository);
+           LinkedList<ProductModel> productModels = productRepository.findByNameEquals(productByButton);
+           System.out.println(productByButton+" product by button");
+           if (itemService.flag==1) {
+
+               buttonService.setProductName(productByButton);
+               sendInlineButtonForMultipleProducts(buttonService.getButtons(),productModels.get(0).getPrice(),
+                       productModels.get(0).getName(),
+                       productModels.get(0).getDescription());
+           }
+           else if (itemService.flag==0){
+               LinkedList<ProductModel> productModelLinkedList = itemService.productModels(command,productRepository);
+               if(productModelLinkedList!=null) {
+                   for (int i = 0; i < productModelLinkedList.size(); i++) {
+                       String productInfo = productModelLinkedList.get(i).getDescription();
+                       productInfo = productInfo.concat(String.valueOf(productModelLinkedList.get(i).getPrice()));
+//                    sendMessage(productInfo);
+                       sendInlineButtonForMultipleProducts(buttonService.getButtons(), productModelLinkedList.get(i).getPrice(),
+                               productModelLinkedList.get(i).getName(),
+                               productModelLinkedList.get(i).getDescription());
+
+                   }
+               }
+           }
+
+           System.out.println("------>outsidee");
+//            productRepository.findByNameContaining();
+//            buttonServiceForProducts.add(buttonService.setProductName()).
+
+          //  sendMessage(productByButton);
+       }
+        else if (!(command.equals("")))//if the command does not match with any if returning can't recognise command message.
         {
 
             System.out.println("----------------->" + tokenize.tokenization(command));
             sendMessage("I don't recognize this command\uD83D\uDE13 yet, but I am still working on it\uD83D\uDEE0");
         }
+
 
 
 //
