@@ -5,6 +5,7 @@ import Rajas.com.botRest.BotRest.Entity.ProductModel;
 import Rajas.com.botRest.BotRest.Repository.ProductRepository;
 import org.telegram.telegrambots.meta.api.methods.invoices.SendInvoice;
 import org.telegram.telegrambots.meta.api.objects.payments.LabeledPrice;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,7 +16,8 @@ import java.util.Optional;
 public class CheckoutService  {
     private long userId;
     private String companyName;
-    private String providerToken="5322214758:TEST:022f116a-0e7e-454b-87a8-8039462791f2";
+    private String providerToken="1877036958:TEST:1942230c8b50294c0d51920bda254d712d654afd";
+//    private String providerToken = "5322214758:TEST:022f116a-0e7e-454b-87a8-8039462791f2";
     private String payload;
     private String description;
     private String currency ="INR";
@@ -50,6 +52,9 @@ public class CheckoutService  {
         sendInvoice.setCurrency(currency);
         sendInvoice.setPrices(labeledPrices);
         sendInvoice.setNeedShippingAddress(true);
+
+
+
         return sendInvoice;
     }
 
