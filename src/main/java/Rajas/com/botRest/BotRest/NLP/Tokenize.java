@@ -15,13 +15,9 @@ public class Tokenize {
 
        List<CoreLabel> coreLabelList = coreDocument.tokens();
        for (CoreLabel coreLabel : coreLabelList){
-           System.out.println(coreLabel.originalText()+"Kahitari");
            pascal = String.valueOf(coreLabel.originalText());
-           System.out.println(pascal+"Adding here");
            pascal1 = pascal.substring(0,1).toUpperCase()+pascal.substring(1).toLowerCase();
-           System.out.println(pascal1+"Adding");
            newCommand = newCommand.concat(pascal1)+" ";
-           System.out.println(newCommand+"newCommand");
 
 
        }

@@ -55,7 +55,6 @@ public class CartService {
 
         String tokenizedCommand = tokenize.tokenization(command);
         LinkedList<ProductModel>allProductsList = productRepository.allProductsList();
-        System.out.println("Tokenissedddd comannddddo"+tokenizedCommand);
         LinkedList<Cart> cartLinkedList =  cartRepository.getCartByUserId(userId);
         for(int i=0;i<allProductsList.size();i++) {
             if (tokenizedCommand.contains(allProductsList.get(i).getName()))
@@ -92,7 +91,6 @@ public class CartService {
         public boolean isShowCart(String command)
         {
             String tokenizedCommand = tokenize.tokenization(command);
-            System.out.println(tokenizedCommand+"Tokenizeddddddd");
             if((tokenizedCommand.contains("Show"))&&(tokenizedCommand.contains("Cart"))){
                 return true;
             }
@@ -161,10 +159,8 @@ public class CartService {
             }
             try {
                 Cart productToDelete = cartByUserWithIndex.get(productId);
-                System.out.println("--------------------------1");
               //  String productName = String.valueOf(productToDelete.getProducts());
                 cartRepository.delete(productToDelete);
-                System.out.println("--------------------------2");
                 return "Product removed from cart";
             }
             catch (Exception e)
@@ -223,7 +219,6 @@ public class CartService {
 
                 if (quantFlag==0) {
 
-                    System.out.println("In else sdfghjkjhgff");
                     int prodQuantity = lastProduct.getQuantity();
                     lastProduct.setQuantity(quantity);
                     cartRepository.save(lastProduct);
@@ -237,7 +232,6 @@ public class CartService {
          }
          catch (Exception e)
          {
-             System.out.println(e+"Exception while updating quantity");
              return  false;
          }
         }

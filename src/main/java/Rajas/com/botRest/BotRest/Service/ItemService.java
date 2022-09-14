@@ -124,7 +124,6 @@ public class ItemService {
             }
         }
 //
-        System.out.println(productByName);
         return productByName;
     }
 
@@ -139,7 +138,6 @@ public class ItemService {
                 products = products.concat("Desc: " + productModels.get(i).getDescription() + "\n" + "\n");
                 i++;
             }
-            System.out.println(products);
         }
         return products;
     }
@@ -149,7 +147,6 @@ public class ItemService {
         try {
             number = Integer.parseInt(command);
         } catch (Exception e) {
-            System.out.println(e);
         }
         return number;
     }
@@ -166,7 +163,6 @@ public class ItemService {
     public boolean recogniseAddToCart(String command) {
         String rootString = lemmatization.getLemma(command);
         String newCommand = tokenize.tokenization(rootString);
-//        System.out.println("Recognise--------->"+newCommand);
         if ((newCommand.contains("Put")) || (newCommand.contains("Insert")) || (newCommand.contains("Add"))&&(newCommand.contains("Cart"))) {
             return true;
         } else {
@@ -188,12 +184,10 @@ public int flag=0;
         if (productName.length()>2)
         {
             flag=1;
-            System.out.println("In if of product by button");
             return productName;
         }
         else {
             flag=0;
-            System.out.println("In else of product by button");
             ButtonServiceForProducts buttonService = new ButtonServiceForProducts();
             LinkedList<ButtonServiceForProducts> buttonServiceForProducts = new LinkedList<>();
             LinkedList<ProductModel> productModelLinkedList = productModels(command,productRepository);

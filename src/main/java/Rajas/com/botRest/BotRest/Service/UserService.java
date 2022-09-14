@@ -23,7 +23,6 @@ import java.util.regex.Pattern;
         Pattern ptrn = Pattern.compile("(0/60)?[7-9][0-9]{9}");
 //the matcher() method creates a matcher that will match the given input against this pattern
         Matcher match = ptrn.matcher(str);
-//        System.out.println("----"+(match.find() && match.group().equals(str)));
 //returns a boolean value
         if ((match.find() && match.group().equals(str))){
             return true;
@@ -41,7 +40,6 @@ import java.util.regex.Pattern;
             return true;
 
         }catch (Exception e){
-            System.out.println("False"+ e);
             return false;
         }
     }

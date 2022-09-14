@@ -15,7 +15,6 @@ public class Lemmatization {
         List<CoreLabel> coreLabelList = coreDocument.tokens();
         for (CoreLabel coreLabel : coreLabelList) {
             String lemma = coreLabel.lemma();
-            System.out.println( lemma);
             newLemma = newLemma.concat(lemma)+" ";
         }
         return newLemma;

@@ -4,6 +4,7 @@ import Rajas.com.botRest.BotRest.Entity.Cart;
 import Rajas.com.botRest.BotRest.Entity.ProductModel;
 import Rajas.com.botRest.BotRest.Repository.ProductRepository;
 import org.telegram.telegrambots.meta.api.methods.invoices.SendInvoice;
+import org.telegram.telegrambots.meta.api.objects.payments.Invoice;
 import org.telegram.telegrambots.meta.api.objects.payments.LabeledPrice;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
@@ -42,6 +43,9 @@ public class CheckoutService  {
             labeledPrices.get(i).setLabel(productModel.get().getName());
             labeledPrices.get(i).setAmount((productModel.get().getPrice()*100)*cart.get(i).getQuantity());
         }
+
+
+        Invoice invoice =new Invoice();
 
        SendInvoice sendInvoice= new SendInvoice();
         sendInvoice.setChatId(userId);
