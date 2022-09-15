@@ -20,8 +20,10 @@ public interface CartRepository extends JpaRepository<Cart,Integer> {
 
     @Modifying
     @Transactional
-    @Query(value = "delete from Cart where user_id=:m",nativeQuery = true)
+    @Query(value = "delete from cart where user_id=:m",nativeQuery = true)
      void deleteByUuid(@Param("m") long uuid);
+
+    LinkedList<Cart> findByUuid(long chatUserId);
 
 //    @Query(value = "SET foreign_key_checks =:m",nativeQuery = true)
 //    void setForeignKeyChecks(@Param("m") int fkCheck);

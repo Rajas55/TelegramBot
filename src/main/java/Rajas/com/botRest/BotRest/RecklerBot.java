@@ -140,10 +140,7 @@ public class RecklerBot extends TelegramLongPollingBot {
             InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
             List<List<InlineKeyboardButton>> rowsInline = new LinkedList<>();
 
-//            List<InlineKeyboardButton> rowInline2 = new LinkedList<>();
-//            InlineKeyboardButton priceBtn = new InlineKeyboardButton();
-//            InlineKeyboardButton priceBtn2 = new InlineKeyboardButton();
-//            LinkedList<String> str = new LinkedList<>();
+
 
             int buttonDivider = buttonName.size() / 3;
             int buttonMod = buttonName.size() % 3;
@@ -489,13 +486,22 @@ public class RecklerBot extends TelegramLongPollingBot {
             button.add("View Order History");
             sendButtons("Order Placed Successfully✅", button, false, true);
             billService.saveOrder(chatUserId);
-            cartRepository.deleteByUuid(chatUserId);
+
+            try{
+                if (cartRepository.findByUuid(chatUserId)!=null)
+                cartRepository.deleteByUuid(chatUserId);
+            }catch (Exception tushar){
+                sendMessage(tushar.toString());
+            }
 
             try {
 
                 answerPreCheckoutQuery.setPreCheckoutQueryId(update.getPreCheckoutQuery().getId());
                 answerPreCheckoutQuery.setOk(true);
                 execute(answerPreCheckoutQuery);
+
+
+
 
             } catch (Exception w) {
                 System.out.println(w);
@@ -542,11 +548,11 @@ public class RecklerBot extends TelegramLongPollingBot {
            cart.add(0,new Cart());
            cart.get(0).setId(0);
            cart.get(0).setUuid(userId);
-           cart.get(0).setProducts(product);
+//           cart.get(0).set(product);
            cart.get(0).setProductId(product.get(0).getProdId());
            cart.get(0).setQuantity(1);
 //           cartRepository.save(cart.get(0));
-           cartRepository.saveAll(cart);
+//           cartRepository.saveAll(cart);
          //  LinkedList<Cart> cart = cartRepository.getCartByUserId(userId);
            CheckoutService checkoutService = new CheckoutService(userId, companyName, payload, description);
            SendInvoice sendInvoice = checkoutService.invoiceGenerator(cart, productRepository);
@@ -559,8 +565,12 @@ public class RecklerBot extends TelegramLongPollingBot {
                System.out.println(e);
            }
 
-       }else if(command.equals("View Order History")){
-           sendMessage(billService.orderHistory(update2.getMessage().getChatId()));
+       }else if(command.equals("View Order History")||command.equals("/orderhistory")){
+
+            LinkedList<String> button = new LinkedList<>();
+            button.add("Back To Categories");
+            sendButtons(billService.orderHistory(update2.getMessage().getChatId()), button, false, true);
+
 
         }
         else if(command.equals("Delete all from cart"))

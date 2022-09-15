@@ -91,7 +91,7 @@ public class CartService {
         public boolean isShowCart(String command)
         {
             String tokenizedCommand = tokenize.tokenization(command);
-            if((tokenizedCommand.contains("Show"))&&(tokenizedCommand.contains("Cart"))){
+            if(((tokenizedCommand.contains("Show"))&&(tokenizedCommand.contains("Cart")))||command.equals("/showcart")){
                 return true;
             }
             else

@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="Cart")
+@Table(name="cart")
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -26,9 +26,9 @@ public class Cart {
 
     private int quantity;
 
-    @ManyToMany
-    @JoinColumn(name = "ProdId")
-    private List<ProductModel> products =new ArrayList<ProductModel>();
+//    @ManyToMany
+//    @JoinColumn(name = "ProdId")
+//    private List<ProductModel> products =new ArrayList<ProductModel>();
 
 
 }

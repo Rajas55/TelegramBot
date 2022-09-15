@@ -12,7 +12,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="UserDetails")
+@Table(name="user_details")
 public class User {
     @Id
     @Column(name = "user_id",nullable = false)
@@ -28,9 +28,7 @@ public class User {
     @Column(name = "PhoneNo",nullable = false)
     private String mob;
 
-    @OneToOne
-    @JoinColumn(name="cartId")
-    private Cart cartId;
+
 
 
 

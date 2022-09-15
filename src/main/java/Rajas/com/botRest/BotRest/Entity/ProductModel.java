@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @EnableJpaRepositories
-@Table(name="Products")
+@Table(name="products")
 public class ProductModel {
 
     @Id
@@ -46,8 +46,8 @@ public class ProductModel {
 //    @ManyToMany(mappedBy = "products")
 //    private List<Cart> cart =new ArrayList<Cart>();
 
-    @ManyToMany(mappedBy = "products")
-    private List<Cart>carts =new ArrayList<Cart>();
+//    @ManyToMany(mappedBy = "products")
+//    private List<Cart>carts =new ArrayList<Cart>();
 
 }
 

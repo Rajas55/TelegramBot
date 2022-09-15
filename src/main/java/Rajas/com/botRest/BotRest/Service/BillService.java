@@ -54,7 +54,7 @@ public class BillService {
            orderPast=orderPast.concat(String.valueOf(productName.get().getName()+"\t\t"+"Qty:"));
            orderPast=orderPast.concat(String.valueOf(pastOrders.get(i).getQuantity()+"\t\t"));
            orderPast=orderPast.concat(String.valueOf("₹"+productRepository.findById(pastOrders.get(i).getProdId()).get().getPrice()+"/- \n"));
-           orderPast=orderPast.concat(String.valueOf(pastOrders.get(i).getDateAndTime()+"\n"));
+           orderPast=orderPast.concat(String.valueOf("Date and time: "+pastOrders.get(i).getDateAndTime()+"\n"));
            orderPast=orderPast.concat("Status: "+pastOrders.get(i).getStatus()+"\n\n");
        }
        return orderPast;
