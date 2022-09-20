@@ -1,7 +1,6 @@
 package Rajas.com.botRest.BotRest;
 
 import Rajas.com.botRest.BotRest.Entity.Cart;
-import Rajas.com.botRest.BotRest.Entity.OrderModel;
 import Rajas.com.botRest.BotRest.Entity.ProductModel;
 import Rajas.com.botRest.BotRest.Repository.*;
 import Rajas.com.botRest.BotRest.Service.*;
@@ -25,6 +24,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
+import javax.ws.rs.core.Link;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -51,6 +51,7 @@ public class RecklerBot extends TelegramLongPollingBot {
     CartService cartService = new CartService();
     @Autowired
      BillService billService;
+    int buyNowFlag =0;
 
 
 
@@ -419,8 +420,10 @@ public class RecklerBot extends TelegramLongPollingBot {
 
         String command = "";
 
+
         try {
             if (update.getMessage().hasContact()) {
+                System.out.println("1");
                 String contact = String.valueOf(update2.getMessage().getContact().getPhoneNumber());
                 long chatId = update2.getMessage().getContact().getUserId();
                 String name = update2.getMessage().getContact().getFirstName();
@@ -446,19 +449,25 @@ public class RecklerBot extends TelegramLongPollingBot {
                     }
                 }
 
-            } else {
+
+            }
+            else {
+                System.out.println("2");
                 command = update.getMessage().getText();//storing the new message set by user in a string
             }
         } catch (Exception e) {
             try {
+                System.out.println("3");
                 command = update.getMessage().getText();
             } catch (Exception f) {
                 try {
+                    System.out.println("4");
 
 
                     command = update.getCallbackQuery().getData();
                 } catch (Exception a) {
                     try {
+                        System.out.println("5");
                         isSuccessfulPayment = m.hasSuccessfulPayment();
                         command = successfulPayment.getInvoicePayload();
                         int fun =successfulPayment.getTotalAmount();
@@ -477,7 +486,9 @@ public class RecklerBot extends TelegramLongPollingBot {
 
         }
         long chatUserId;
+
         if(update.hasPreCheckoutQuery()) {
+            System.out.println("6");
             chatUserId = update.getPreCheckoutQuery().getFrom().getId();
             message.setChatId(chatUserId);
             message.setText("Your order will be delivered soon");
@@ -488,8 +499,20 @@ public class RecklerBot extends TelegramLongPollingBot {
             billService.saveOrder(chatUserId);
 
             try{
-                if (cartRepository.findByUuid(chatUserId)!=null)
-                cartRepository.deleteByUuid(chatUserId);
+                if (cartRepository.findByUuid(chatUserId)!=null) {
+                    System.out.println(buyNowFlag+"Buy now flag");
+
+                    if(buyNowFlag>0)
+                    {
+                      LinkedList<Cart>cartLinkedList= cartRepository.getCartByUserId(chatUserId);
+                      cartRepository.delete(cartLinkedList.getLast());
+                      buyNowFlag=0;
+                    }
+                    else {
+                        cartRepository.deleteByUuid(chatUserId);
+                        buyNowFlag=0;
+                    }
+                }
             }catch (Exception tushar){
                 sendMessage(tushar.toString());
             }
@@ -516,10 +539,12 @@ public class RecklerBot extends TelegramLongPollingBot {
 
         }
 
-        if(command==null) {
+        else if(command==null) {
+            System.out.println("7");
 
         }
       else if ((cartFlag == 1) && (userService.isDigit(command))) {
+            System.out.println("8");
             long uuid = update.getMessage().getChatId();
             int quantity = itemService.stringToIntConverter(command);
             cartService.updateQuantity(quantity, cartRepository, uuid);
@@ -534,6 +559,7 @@ public class RecklerBot extends TelegramLongPollingBot {
         }
        else if((command != null)&& command.contains("Buy now") && command.length() >7)
        {
+           System.out.println("9");
 
            String productName = command.replace("Buy now","").trim();
            LinkedList<ProductModel> product = productRepository.findByNameEquals(productName);
@@ -548,12 +574,13 @@ public class RecklerBot extends TelegramLongPollingBot {
            cart.add(0,new Cart());
            cart.get(0).setId(0);
            cart.get(0).setUuid(userId);
-//           cart.get(0).set(product);
+        //   cart.get(0).setProductId(product.);
            cart.get(0).setProductId(product.get(0).getProdId());
            cart.get(0).setQuantity(1);
-//           cartRepository.save(cart.get(0));
-//           cartRepository.saveAll(cart);
-         //  LinkedList<Cart> cart = cartRepository.getCartByUserId(userId);
+           cartRepository.save(cart.get(0));
+           buyNowFlag=1;
+       //    cartRepository.save(cart.get(0));
+      //     LinkedList<Cart> cart = cartRepository.getCartByUserId(userId);
            CheckoutService checkoutService = new CheckoutService(userId, companyName, payload, description);
            SendInvoice sendInvoice = checkoutService.invoiceGenerator(cart, productRepository);
 
@@ -566,15 +593,28 @@ public class RecklerBot extends TelegramLongPollingBot {
            }
 
        }else if(command.equals("View Order History")||command.equals("/orderhistory")){
-
+          String orderList =  billService.orderHistory(update2.getMessage().getChatId());
             LinkedList<String> button = new LinkedList<>();
             button.add("Back To Categories");
-            sendButtons(billService.orderHistory(update2.getMessage().getChatId()), button, false, true);
+           if (orderList.equals("Order History \n")){
+
+
+               sendButtons("No previous orders", button, false, true);
+
+
+           }
+           else {
+               System.out.println("10");
+
+
+               sendButtons(billService.orderHistory(update2.getMessage().getChatId()), button, false, true);
+           }
 
 
         }
         else if(command.equals("Delete all from cart"))
         {
+            System.out.println("11");
             cartRepository.deleteByUuid(update.getMessage().getChatId());
             sendMessage("All products deleted from cart");
             String cartMessage ="No Items in cart\uD83D\uDC94";
@@ -583,6 +623,7 @@ public class RecklerBot extends TelegramLongPollingBot {
             sendButtons(cartMessage, button, false, true);
         }
         else if (cartService.isShowCart(command)) {
+            System.out.println("12");
             String cart=null;
             LinkedList<String> cartButtons = cartService.getCheckoutButton();
             try {
@@ -604,6 +645,7 @@ public class RecklerBot extends TelegramLongPollingBot {
 
 
         } else if (command.equals("Checkout")) {
+            System.out.println("13");
             long userId = update.getCallbackQuery().getMessage().getChatId();
             String companyName = "RetailBot";
             String payload = "this is payload";
@@ -624,6 +666,7 @@ public class RecklerBot extends TelegramLongPollingBot {
 
 
         else if (deleteFlag>0 && userService.isDigit(command)) {
+            System.out.println("14");
 
             deleteFlag=0;
             sendMessage(cartService.deleteFromCart(Integer.parseInt(command),update2.getMessage().getChatId(),cartRepository));
@@ -643,6 +686,7 @@ public class RecklerBot extends TelegramLongPollingBot {
             //  sendMessage(cartRepository.getCartByUserId(update.getMessage().getChatId()));
         }
         else if (itemService.recogniseAddToCart(command)) {
+            System.out.println("15");
             long userId;
             try {
 
@@ -652,6 +696,7 @@ public class RecklerBot extends TelegramLongPollingBot {
             }
             String productsAddedInCartResult = cartService.addProductToCart(command, productRepository, cartProductRepository, userId, cartRepository);
             if (productsAddedInCartResult != null) {
+                System.out.println("16");
                 LinkedList<String> quantity = new LinkedList<>();
                quantity.add("4");
                quantity.add("1");
@@ -667,6 +712,7 @@ public class RecklerBot extends TelegramLongPollingBot {
 
 //
             } else {
+                System.out.println("17");
                 sendMessage("Unable to add product into cart");
                 LinkedList<String> categoriesList = itemService.getCategoryList(categoryRepository);
                 sendButtons(itemService.getCategories(categoryRepository), categoriesList, false, true);
@@ -674,7 +720,8 @@ public class RecklerBot extends TelegramLongPollingBot {
             }
 
         }
-        else if (command.equals("/start")) { //command.equals function to check if user entered command has a defined word.
+        else if (command.equals("/start")) {
+            System.out.println("18");//command.equals function to check if user entered command has a defined word.
             sendMessage("Welcome " + update.getMessage().getFrom().getFirstName());//sending welcome and user's first name.
             sendMessage("Type /help for help");
 //            sendMessage(userService.registerUser()); // register user function in user service to send message "Enter you number".
@@ -684,6 +731,7 @@ public class RecklerBot extends TelegramLongPollingBot {
 
             //Passing the command and list of categories to the recogniseCategoryByName function in itemService
         } else if (itemService.recogniseCategoryByName(command, categoryRepository.findAll()) != null) {
+            System.out.println("19");
             //saving the category name returned by recogniseCategoryByName in a string
             String categoryReturned = itemService.recogniseCategoryByName(command, categoryRepository.findAll());
             int catId = itemService.getCategoryIdByCategory(categoryReturned, categoryRepository);//passing the above string and the category repo to the function getCategoryIdByCategory
@@ -698,13 +746,15 @@ public class RecklerBot extends TelegramLongPollingBot {
             sendButtons("Quick actions ↴",buttons,false,true);
 
 
-        } else if (itemService.recogniseCategory(command) || command.equals("Show Categories")) { //recognise the word category from user's message and if true returning all the categories
+        } else if (itemService.recogniseCategory(command) || command.equals("Show Categories")) {
+            System.out.println("20");//recognise the word category from user's message and if true returning all the categories
 //
 
             LinkedList<String> categoriesList = itemService.getCategoryList(categoryRepository);
             sendButtons(itemService.getCategories(categoryRepository), categoriesList, false, true);
 
-        } else if (command.equals("/help")) { //help command to help user
+        } else if (command.equals("/help")) {
+            System.out.println("21");//help command to help user
 
             sendMessage("This is a retail bot to help you shop at storefront businesses online." + "\n" + "\n"
                     + "You can view all product categories the business offers as well as the products." + "\n" + "\n"
@@ -714,6 +764,7 @@ public class RecklerBot extends TelegramLongPollingBot {
 
         else if(command.equals("Delete a product from cart"))
         {
+            System.out.println("22");
 
             sendMessage("Please specify the number of product you want to delete↴");
             sendMessage(cartService.displayCart(update.getMessage().getChatId(),cartRepository,productRepository));
@@ -722,6 +773,7 @@ public class RecklerBot extends TelegramLongPollingBot {
         }
 
         else if(command.equals("Update Quantity")){
+            System.out.println("23");
            sendMessage(cartService.displayCart(update.getMessage().getChatId(),cartRepository,productRepository));
 
            sendMessage("Enter the number of the product to update its Qty");
@@ -729,6 +781,7 @@ public class RecklerBot extends TelegramLongPollingBot {
             updateFlag =1;
        }
    else if (updateFlag==1) {
+            System.out.println("24");
            try {
                cartProductNo = Integer.parseInt(command);
                 int cartSize = cartRepository.getCartByUserId(update.getMessage().getChatId()).size();
@@ -757,6 +810,7 @@ public class RecklerBot extends TelegramLongPollingBot {
 
        else if(updateFlag==2&&userService.isDigit(command))
        {
+           System.out.println("25");
            int quanity=1;
 
            cartProductNo = cartProductNo-1;
@@ -776,6 +830,7 @@ public class RecklerBot extends TelegramLongPollingBot {
 
            if(result)
            {
+               System.out.println("26");
                LinkedList<String> cartButtons = cartService.getCheckoutButton();
                sendMessage("Quantity updated");
                sendInlineButton(cartButtons,cartService.displayCart(update.getMessage().getChatId(),cartRepository,productRepository));
@@ -791,9 +846,9 @@ public class RecklerBot extends TelegramLongPollingBot {
            }
        }
 
-
-       else if ((productRepository.findByNameEquals(command)!=null )&& !(command.equals("Categories")) && !(command.equals("Update Quantity")))
+        else if ((productRepository.findByNameEquals(command).size()>0)&& !(command.equals("Categories")) && !(command.equals("Update Quantity")))
        {
+           System.out.println("27");
            ButtonServiceForProducts buttonService = new ButtonServiceForProducts();
            String productByButton =  itemService.productByButton(command,productRepository);
            LinkedList<ProductModel> productModels = productRepository.findByNameEquals(productByButton);
@@ -820,14 +875,17 @@ public class RecklerBot extends TelegramLongPollingBot {
 
 
 
+
        }
         else if (!(command.equals("")))//if the command does not match with any if returning can't recognise command message.
         {
+            System.out.println("28");
 
             sendMessage("I don't recognize this command\uD83D\uDE13 yet, but I am still working on it\uD83D\uDEE0");
         }
-        else
+        else if (!(update.hasPreCheckoutQuery()||update.getMessage().hasContact()))
         {
+            System.out.println("29");
             sendMessage("I don't recognize this command\uD83D\uDE13 yet, but I am still working on it\uD83D\uDEE0");
 
         }
