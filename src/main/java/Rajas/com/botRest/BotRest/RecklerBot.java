@@ -1,10 +1,15 @@
 package Rajas.com.botRest.BotRest;
 
 import Rajas.com.botRest.BotRest.Entity.Cart;
+import Rajas.com.botRest.BotRest.Entity.OrderModel;
 import Rajas.com.botRest.BotRest.Entity.ProductModel;
 import Rajas.com.botRest.BotRest.Repository.*;
 import Rajas.com.botRest.BotRest.Service.*;
 import lombok.SneakyThrows;
+import org.joda.time.DateTime;
+import org.joda.time.chrono.ISOChronology;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
@@ -24,19 +29,22 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
-import javax.ws.rs.core.Link;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 //service class/main bot class which extends telegram polling bot(Has all the commands
 @Service
 public class RecklerBot extends TelegramLongPollingBot {
-    int updateFlag=0;
-    boolean isSuccessfulPayment=false;
-    int deleteFlag = 0;
-    int cartFlag = 0;
+     private   int updateFlag=0;
+     private boolean isSuccessfulPayment=false;
+     private int deleteFlag = 0;
+     private int cartFlag = 0;
+     private int yr =0;
 
     private int cartProductNo=0;
     SendMessage message = new SendMessage(); //new object for SendMessage predefined by telegram bot api
@@ -52,6 +60,8 @@ public class RecklerBot extends TelegramLongPollingBot {
     @Autowired
      BillService billService;
     int buyNowFlag =0;
+    @Autowired
+    OrderHistoryService orderHistoryService;
 
 
 
@@ -605,9 +615,15 @@ public class RecklerBot extends TelegramLongPollingBot {
            }
            else {
                System.out.println("10");
+               LinkedList <String> filter = new LinkedList();
+               filter.add("2020");
+               filter.add("2021");
+               filter.add("2022");
+
 
 
                sendButtons(billService.orderHistory(update2.getMessage().getChatId()), button, false, true);
+               sendInlineButton(filter,"Past Orders - select year ↴");
            }
 
 
@@ -877,16 +893,84 @@ public class RecklerBot extends TelegramLongPollingBot {
 
 
        }
+
         else if (!(command.equals("")))//if the command does not match with any if returning can't recognise command message.
         {
-            System.out.println("28");
 
-            sendMessage("I don't recognize this command\uD83D\uDE13 yet, but I am still working on it\uD83D\uDEE0");
+          try {
+              System.out.println("12345");
+              yr = Integer.parseInt(command);
+              System.out.println("67890");
+              sendInlineButton(orderHistoryService.buttonsForMonths(),"orders "+yr + " - select period↴");
+
+          }catch (Exception a) {
+              System.out.println("asdfg");
+
+              String months = command;
+              System.out.println("xcvb");
+//              "2021-09-27T00:00:01"
+              String stDate="";
+              String eDate ="";
+              if(months.equals("Jan-Apr")||months.equals("May-Aug")||months.equals("Sept-Dec")){
+
+
+                  switch (months)
+                  {
+                      case "Jan-Apr":
+                          System.out.println("Jan Apr");
+                         stDate=String.valueOf(yr)+"-01-01T00:00:01";
+                          eDate=String.valueOf(yr)+"-04-30T23:59:59";
+                          break;
+                      case "May-Aug":
+                          System.out.println("May Aug");
+                           stDate=String.valueOf(yr)+"-05-01T00:00:01";
+                          eDate=String.valueOf(yr)+"-08-31T23:59:59";
+                          break;
+                      case "Sept-Dec":
+                          System.out.println("Sept Dec");
+                           stDate=String.valueOf(yr)+"-09-01T00:00:01";
+                          eDate=String.valueOf(yr)+"-12-31T23:59:59";
+                          break;
+
+                      default:
+                          sendMessage("default "+"I don't recognize this command\uD83D\uDE13 yet, but I am still working on it\uD83D\uDEE0");
+
+
+                  }
+                  LocalDateTime startDate = LocalDateTime.parse(stDate);
+                  LocalDateTime endDate = LocalDateTime.parse(eDate);
+                  LinkedList<OrderModel>orderModels = orderRepository.getHistorySortByMonths(startDate,endDate);
+                  if (orderModels.size()<1){
+                      sendMessage("No orders");
+                  }
+                  else {
+                      sendMessage(orderHistoryService.convertLinkedListToString(orderModels));
+
+                  }
+
+
+              }
+          }
+          try {
+//              String months = command;
+//              if (yr>2019&&yr<2025){
+//
+//
+//                  sendMessage(orderHistoryService.convertLinkedListToString(orderRepository.getHistorySortByMonths(startDate,endDate)));
+//
+//
+//              }
+          }catch (Exception q){
+
+//              sendMessage(1+"I don't recognize this command\uD83D\uDE13 yet, but I am still working on it\uD83D\uDEE0"+q.getMessage());
+
+          }
+
+
         }
         else if (!(update.hasPreCheckoutQuery()||update.getMessage().hasContact()))
         {
-            System.out.println("29");
-            sendMessage("I don't recognize this command\uD83D\uDE13 yet, but I am still working on it\uD83D\uDEE0");
+            sendMessage(2+"I don't recognize this command\uD83D\uDE13 yet, but I am still working on it\uD83D\uDEE0");
 
         }
 

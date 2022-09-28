@@ -36,20 +36,15 @@ public class BillService {
             order.get(i).setUserId(userId);
             order.get(i).setDateAndTime(now);
             order.get(i).setQuantity(cart.get(i).getQuantity());
-//            orderModel.setProdId(cart.get(i).getProductId());
-//            orderModel.setQuantity(cart.get(i).getQuantity());
-//            orderModel.setUserId(userId);
-//            orderModel.setDateAndTime(now);
-//            orderModel.setStatus("Order received");
-//            orderRepository.save(orderModel);
+
         }
         orderRepository.saveAll(order);
 
     }
     public String orderHistory(long userID){
         LinkedList<OrderModel> pastOrders = orderRepository.getOrderHistory(userID);
-       String orderPast = "Order History \n";
-       for(int i=0;i<pastOrders.size();i++){
+       String orderPast = "Order History (Recent Orders) \n\n";
+       for(int i=pastOrders.size()-1;i>pastOrders.size()-4;i--){
            Optional<ProductModel> productName = productRepository.findById(pastOrders.get(i).getProdId());
            orderPast=orderPast.concat(String.valueOf(productName.get().getName()+"\t\t\t"+"Qty:"));
            orderPast=orderPast.concat(String.valueOf(pastOrders.get(i).getQuantity()+"\t\t\t"));
