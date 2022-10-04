@@ -43,6 +43,9 @@ public class ProductModel {
     @Column(name = "Price")
     private int price;
 
+    @Column(name = "photo_path")
+    private String photoPath;
+
 //    @ManyToMany(mappedBy = "products")
 //    private List<Cart> cart =new ArrayList<Cart>();
 

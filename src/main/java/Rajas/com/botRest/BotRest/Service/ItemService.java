@@ -132,8 +132,8 @@ public class ItemService {
         String products="";
         if(productModels!=null) {
             for (ProductModel productModel : productModels) {
-                products = products.concat("->");
-                products = products.concat(productModels.get(i).getName() + "\t" + "₹");
+                products = products.concat("<b>");
+                products = products.concat(productModels.get(i).getName() + "</b>\t" + "₹");
                 products = products.concat(String.valueOf(productModels.get(i).getPrice()) + "\n");
                 products = products.concat("Desc: " + productModels.get(i).getDescription() + "\n" + "\n");
                 i++;
@@ -202,7 +202,7 @@ public int flag=0;
 
     }
     public String formattedString(String prodName,String prodDescription,int prodPrice){
-        String formatString = "-> "+prodName +"\n"+"₹ "+ prodPrice +"\n"+prodDescription;
+        String formatString = ""+prodName +"\n"+"₹ "+ prodPrice +"\n"+prodDescription;
         return formatString;
     }
 }

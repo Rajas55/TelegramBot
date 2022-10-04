@@ -5,6 +5,7 @@ import Rajas.com.botRest.BotRest.Entity.OrderModel;
 import Rajas.com.botRest.BotRest.Entity.ProductModel;
 import Rajas.com.botRest.BotRest.Repository.*;
 import Rajas.com.botRest.BotRest.Service.*;
+import ch.qos.logback.core.pattern.color.BoldGreenCompositeConverter;
 import lombok.SneakyThrows;
 import org.joda.time.DateTime;
 import org.joda.time.chrono.ISOChronology;
@@ -107,6 +108,7 @@ public class RecklerBot extends TelegramLongPollingBot {
     public void sendMessage(String chat) {
         try
         {
+//            message.setParseMode("HTML");
             message.setText(chat);
             message.setChatId(update2.getMessage().getChatId());
 
@@ -873,7 +875,7 @@ public class RecklerBot extends TelegramLongPollingBot {
                buttonService.setProductName(productByButton);
                sendInlineButtonForMultipleProducts(buttonService.getButtons(),productModels.get(0).getPrice(),
                        productModels.get(0).getName(),
-                       productModels.get(0).getDescription());
+                       productModels.get(0).getDescription()+"\n\n"+productModels.getFirst().getPhotoPath());
            }
            else if (itemService.flag==0){
                LinkedList<ProductModel> productModelLinkedList = itemService.productModels(command,productRepository);
