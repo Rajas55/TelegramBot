@@ -56,6 +56,9 @@ public class CheckoutService  {
         sendInvoice.setCurrency(currency);
         sendInvoice.setPrices(labeledPrices);
         sendInvoice.setNeedShippingAddress(true);
+        sendInvoice.setPhotoHeight(200);
+        sendInvoice.setPhotoWidth(200);
+        sendInvoice.setPhotoUrl("https://static.vecteezy.com/system/resources/previews/004/999/463/original/shopping-cart-icon-illustration-free-vector.jpg");
 
 
 

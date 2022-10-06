@@ -22,4 +22,7 @@ public interface ProductRepository extends JpaRepository<ProductModel,Long> {
 
     public LinkedList<ProductModel> findByNameEquals(String prodName);
 
+    @Query(value = "select * from products where prod_id=:m",nativeQuery = true)
+    public LinkedList<ProductModel>findProductByProductId(@Param("m")long prodId);
+
 }

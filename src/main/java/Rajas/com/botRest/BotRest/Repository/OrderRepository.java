@@ -16,4 +16,7 @@ public interface OrderRepository  extends JpaRepository<OrderModel,Long> {
 
     @Query(value = "SELECT * from order_model where date_and_time between :Start_date and :End_date", nativeQuery = true)
     public LinkedList<OrderModel>getHistorySortByMonths(@Param("Start_date") LocalDateTime startDate, @Param("End_date") LocalDateTime EndDate);
+
+    public LinkedList<OrderModel>findByUserId(long userId);
+
 }

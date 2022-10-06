@@ -46,6 +46,10 @@ public class ProductModel {
     @Column(name = "photo_path")
     private String photoPath;
 
+     @Column(name = "suggestion")
+    private long suggestedProductId;
+
+
 //    @ManyToMany(mappedBy = "products")
 //    private List<Cart> cart =new ArrayList<Cart>();
 
