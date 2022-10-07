@@ -578,7 +578,7 @@ public class RecklerBot extends TelegramLongPollingBot {
                         productModels.get(0).getName(),
                         productModels.get(0).getDescription()+" \n\n"
                                 +productModels.get(0).getPhotoPath());
-                sendMessage("Would You like to buy "+ productModels.get(0).getName() +"\n (frequently bought together with "+boughtProductName+")");
+                sendButtons("Would You like to buy "+ productModels.get(0).getName() +"\n (frequently bought together with "+boughtProductName+")",button,false,true);
 
             }catch (Exception q){
                 System.out.println(q);
