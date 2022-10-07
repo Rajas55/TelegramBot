@@ -515,7 +515,7 @@ public class RecklerBot extends TelegramLongPollingBot {
             long suggestedProdId = productId.get().getSuggestedProductId();
             LinkedList<ProductModel> productModels = productRepository.findProductByProductId(suggestedProdId);
             ButtonServiceForProducts buttonServiceForProducts = new ButtonServiceForProducts();
-
+            Thread.sleep(2000);
 
 
 
@@ -911,6 +911,7 @@ public class RecklerBot extends TelegramLongPollingBot {
                 sendInlineButtonForMultipleProducts(buttonService.getButtons(), productModels.get(0).getPrice(),
                         productModels.get(0).getName(),
                         productModels.get(0).getDescription() + " \n\n" + productModels.getFirst().getPhotoPath());
+                itemService.flag=0;
             }
         }
            else if (itemService.flag==0){
@@ -924,7 +925,7 @@ public class RecklerBot extends TelegramLongPollingBot {
                        sendInlineButtonForMultipleProducts(buttonService.getButtons(), productModelLinkedList.get(i).getPrice(),
                                productModelLinkedList.get(i).getName(),
                                productModelLinkedList.get(i).getDescription()+" \n\n"+productModelLinkedList.get(i).getPhotoPath());
-
+     //                  itemService.flag=1;
                    }
                }
            }

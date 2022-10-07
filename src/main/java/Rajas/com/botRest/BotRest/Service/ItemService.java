@@ -4,15 +4,12 @@ import Rajas.com.botRest.BotRest.Entity.CategoryModel;
 import Rajas.com.botRest.BotRest.Entity.ProductModel;
 import Rajas.com.botRest.BotRest.NLP.Lemmatization;
 import Rajas.com.botRest.BotRest.NLP.Tokenize;
-import Rajas.com.botRest.BotRest.RecklerBot;
 import Rajas.com.botRest.BotRest.Repository.CategoryRepository;
 import Rajas.com.botRest.BotRest.Repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 public class ItemService {
 
@@ -28,7 +25,6 @@ public class ItemService {
         for (CategoryModel category : categories) {
             categoryList = categoryList.concat(category.getCatId() + ". ");
             categoryList = categoryList.concat(category.getCategory() + "\n");
-
 
         }
         return categoryList;
@@ -49,8 +45,6 @@ public class ItemService {
         return productDetails;
 
     }
-
-
     public LinkedList<String> getProductsListByCategory(ProductRepository productRepository, int catId) {
         LinkedList<ProductModel> products = productRepository.getProductsByCategoryId(catId);
         LinkedList<String> productNameList = new LinkedList<>();
@@ -161,6 +155,9 @@ public class ItemService {
 
 
     public boolean recogniseAddToCart(String command) {
+
+
+
         String rootString = lemmatization.getLemma(command);
         String newCommand = tokenize.tokenization(rootString);
         if ((newCommand.contains("Put")) || (newCommand.contains("Insert")) || (newCommand.contains("Add"))&&(newCommand.contains("Cart"))) {
