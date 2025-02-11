@@ -24,12 +24,6 @@ public class CategoryModel {
         @Column(name = "Category",nullable = false)
         private String category;
 
-//    @OneToMany(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "productCategories")
-//    private Products products;
-//@OneToOne(mappedBy = "productCategories")
-//private Products products;
-
     @OneToMany(mappedBy = "categoryModel")
     private List<ProductModel> products =new ArrayList<ProductModel>();
 

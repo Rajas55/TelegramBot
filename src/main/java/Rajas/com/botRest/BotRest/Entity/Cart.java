@@ -26,10 +26,6 @@ public class Cart {
 
     private int quantity;
 
-//    @ManyToMany
-//    @JoinColumn(name = "ProdId")
-//    private List<ProductModel> products =new ArrayList<ProductModel>();
-
 
 }
 

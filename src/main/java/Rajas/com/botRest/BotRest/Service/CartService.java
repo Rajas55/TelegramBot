@@ -127,7 +127,7 @@ public class CartService {
                         productInfo = productInfo.concat(String.valueOf(cartByUserWithIndex.indexOf(getCartByUserId.get(i))+1));
                         productInfo = productInfo.concat(". "+product.get().getName()+"   qty: ");
                         productInfo = productInfo.concat(String.valueOf((cartRepository.getCartByUserId(uuid).get(i).getQuantity())));
-                        productInfo =productInfo.concat("    ₹");
+                        productInfo =productInfo.concat("    $");
                         productInfo = productInfo.concat(String.valueOf(product.get().getPrice()));
                         productInfo =productInfo.concat("/-"+"\n");
 
