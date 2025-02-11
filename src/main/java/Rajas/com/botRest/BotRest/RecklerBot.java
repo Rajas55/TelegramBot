@@ -26,9 +26,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import java.time.LocalDateTime;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,6 +38,8 @@ public class RecklerBot extends TelegramLongPollingBot {
      private int deleteFlag = 0;
      private int cartFlag = 0;
      private int yr =0;
+    private final Map<Long, CommandData> lastCommandMap = new HashMap<>();
+    private final Set<Long> processedMessages = new HashSet<>();
 
     private int cartProductNo=0;
     SendMessage message = new SendMessage(); //new object for SendMessage predefined by telegram bot api
@@ -84,6 +84,7 @@ public class RecklerBot extends TelegramLongPollingBot {
     private OrderRepository orderRepository;
 
 
+
     @Override
     public String getBotUsername() {
         return "RetailBot";
@@ -98,7 +99,14 @@ public class RecklerBot extends TelegramLongPollingBot {
     public void onRegister() {
         super.onRegister();
     } //overriding the method defined by telegram bot api.
-
+    public static class CommandData {
+        public String command;
+        public long timestamp;
+        public CommandData(String command, long timestamp) {
+            this.command = command;
+            this.timestamp = timestamp;
+        }
+    }
     public void sendMessage(String chat) {
         try
         {
@@ -774,17 +782,39 @@ public class RecklerBot extends TelegramLongPollingBot {
             }
 
         }
-        else if (command.equals("/start")) {
-            System.out.println("18");//command.equals function to check if user entered command has a defined word.
-            sendMessage("Welcome " + update.getMessage().getFrom().getFirstName());//sending welcome and user's first name.
+        // --- Process the /start command only once ---
+        if ("/start".equals(command)) {
+            // Only process /start if it comes as a message update.
+            if (!update.hasMessage()) {
+                return;
+            }
+            long chatId = update.getMessage().getChatId();
+            long messageId = update.getMessage().getMessageId();
+            long now = System.currentTimeMillis();
+
+            // Check if we've processed a /start from this chat very recently (e.g., within 3 seconds)
+            CommandData last = lastCommandMap.get(chatId);
+            if (last != null && last.command.equals(command) && (now - last.timestamp < 8000)) {
+                System.out.println("Duplicate /start detected within 3 seconds for chat: " + chatId);
+                return;
+            }
+            // Record this command for this chat
+            lastCommandMap.put(chatId, new CommandData(command, now));
+
+            // Also check for duplicate message ID if needed
+            if (processedMessages.contains(messageId)) {
+                System.out.println("Ignoring duplicate /start message: " + messageId);
+                return;
+            }
+            processedMessages.add(messageId);
+
+            System.out.println("Handling /start command - only once");
+            sendMessage("Welcome " + update.getMessage().getFrom().getFirstName());
             sendMessage("Type /help for help");
-//            sendMessage(userService.registerUser()); // register user function in user service to send message "Enter you number".
-            String text = "Please click on the button below to register using mobile number";
-            requestMobileNumberButton(text, "☎️ Click here to register", true);
-
-
-            //Passing the command and list of categories to the recogniseCategoryByName function in itemService
-        } else if (itemService.recogniseCategoryByName(command, categoryRepository.findAll()) != null) {
+            requestMobileNumberButton("Please register using mobile number", "☎️ Click here to register", true);
+            return;
+        }
+        else if (itemService.recogniseCategoryByName(command, categoryRepository.findAll()) != null) {
             System.out.println("19");
             //saving the category name returned by recogniseCategoryByName in a string
             String categoryReturned = itemService.recogniseCategoryByName(command, categoryRepository.findAll());

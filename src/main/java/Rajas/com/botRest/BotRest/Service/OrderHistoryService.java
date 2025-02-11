@@ -32,7 +32,7 @@ public class OrderHistoryService {
                 Optional<ProductModel> productName = productRepository.findById(pastOrders.get(i).getProdId());
                 orderPast = orderPast.concat(String.valueOf(productName.get().getName() + "\t\t\t" + "Qty:"));
                 orderPast = orderPast.concat(String.valueOf(pastOrders.get(i).getQuantity() + "\t\t\t"));
-                orderPast = orderPast.concat(String.valueOf("₹" + productRepository.findById(pastOrders.get(i).getProdId()).get().getPrice() + "/- \n"));
+                orderPast = orderPast.concat(String.valueOf("$" + productRepository.findById(pastOrders.get(i).getProdId()).get().getPrice() + "/- \n"));
                 orderPast = orderPast.concat(String.valueOf("Order date: " + pastOrders.get(i).getDateAndTime() + "\n"));
                 orderPast = orderPast.concat("Status: " + pastOrders.get(i).getStatus() + "\n\n");
             }
